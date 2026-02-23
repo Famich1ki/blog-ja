@@ -1,0 +1,122 @@
+footer:
+  framework:フレームワーク
+  theme: テーマ
+
+copy:
+  success: コピー成功
+  error: コピーエラー
+  noSupport: ブラウザがサポートされていません
+
+page:
+  articles: 文章
+  tag: タグ
+  category: カテゴリー
+  archives: アーカイブ
+
+card_post_count: コメント
+
+no_title: 無題
+
+post:
+  created: 作成
+  updated: 更新
+  wordcount: 文字数
+  min2read: 読了時間
+  min2read_unit: 分
+  page_pv: 投稿閲覧数
+  comments: コメント
+  copyright:
+    author: 著者
+    link: リンク
+    copyright_notice: 著作権表示
+    copyright_content: 'このブログの記事は、特に記載がない限り、すべて<a href="%s">%s</a>の下でライセンスされています。'
+  recommend: 関連記事
+  edit: 編集日
+
+search:
+  title: 検索
+  load_data: データベースの読み込み中
+  algolia_search:
+    input_placeholder: 投稿を検索
+    hits_empty: "検索条件 ${query} に対する結果は見つかりませんでした。"
+    hits_stats: '${hits} 件の結果が ${time} ミリ秒で見つかりました'
+
+  local_search:
+    input_placeholder: 投稿を検索
+    hits_empty: "検索条件 ${query} に対する結果が見つかりませんでした。"
+    hits_stats: '${hits} 件の結果が見つかりました'
+
+pagination:
+  prev: 前
+  next: 次
+
+comment: コメント
+
+aside:
+  articles: 文章
+  tags: タグ
+  categories: カテゴリー
+  card_announcement: お知らせ
+  card_categories: カテゴリー
+  card_tags: タグ
+  card_archives: アーカイブ
+  card_recent_post: 最近の投稿
+  card_webinfo:
+    headline: 情報
+    article_name: 文章
+    runtime:
+      name: ランタイム
+      unit: 日
+    last_push_date:
+      name: 最終更新日
+    site_wordcount: 総数
+    site_uv_name: UV
+    site_pv_name: PV
+  more_button: もっと見る
+  card_newest_comments:
+    headline: 最新のコメント
+    loading_text: 読み込み中...
+    error: コメントを取得できませんでした。設定を確認してください。
+    zero: コメントはありません
+    image: 画像
+    link: リンク
+    code: コード
+  card_toc: 目次
+  card_post_series: シリーズ
+
+date_suffix:
+  just: ついさっき
+  min: 数分前
+  hour: 数時間前
+  day: 数日前
+  month: 数か月前
+
+donate: スポンサー
+share: 共有
+
+rightside:
+  readmode_title: 読み取りモード
+  translate_title: 繁体字と簡体字を切り替える
+  night_mode_title:  ライトモードとダークモードを切り替える
+  back_to_top: トップへ戻る
+  toc: 目次
+  scroll_to_comment: コメントまでスクロール
+  setting: 設定
+  aside: 単一列と二重列を切り替える
+  chat: チャット
+
+copy_copyright:
+  author: 著者
+  link: リンク
+  source: ソース
+  info: 著作権は著者に帰属します。商業目的での転載は、著者に許可を得てください。非商業目的での転載は、出典を明記してください。
+Snackbar:
+  chs_to_cht: 繁体字中国語に切り替えました
+  cht_to_chs: 簡体字中国語に切り替えました
+  day_to_night: ダークモードに切り替えました
+  night_to_day: ライトモードに切り替えました
+
+loading: 読み込み中...
+load_more: さらに読み込む
+
+error404: ページが見つかりません

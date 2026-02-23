@@ -70,8 +70,8 @@ aside:
     last_push_date:
       name: 最終更新日
     site_wordcount: 総数
-    site_uv_name: UV
-    site_pv_name: PV
+    site_uv_name: 訪問者数
+    site_pv_name: 総アクセス数
   more_button: もっと見る
   card_newest_comments:
     headline: 最新のコメント

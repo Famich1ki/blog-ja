@@ -1,28 +1,30 @@
 ---
-title: Spring Boot 整合日志
+title: Spring Boot Logging Integration
 date: 2024-08-30 19:05:59
 tags:
   - Spring Boot
-  - 日志
+  - Log
 categories:
-  - [Spring Boot, 日志]
+  - [Spring Boot, Log]
 cover: https://pics.findfuns.org/springboot.png
 ---
-## 前言
 
-Java发展至今已经形成了一套完整的日志体系，分为日志门面和日志具体实现。日志门面相当于一个接口，日志各种实现其实就是日志门面的不同实现。
 
-Java的日志加载依赖于**SPI**，不同于API， SPI模式下接口处于调用者一侧，开发者一侧只拥有具体的实现。而API模式下接口和具体实现都处于开发者一侧，调用者无需关心具体实现，只管调用开发者提供的接口即可。
+## Introduction
 
-SPI机制给予了程序动态加载的能力，程序运行的过程中根据接口去动态扫描对应的接口实现类并加载。
+Up to now, Java has developed a complete logging system, which is divided into a logging facade and specific logging implementations. The logging facade is equivalent to an interface, while the various logging frameworks are actually different implementations of that facade.
 
-举个例子，Java的日志门面Slf4j对应的具体实现有Spring Boot自带的也是默认的logback，还有log4j，log4j2等，在使用时会动态加载classpath中存在的slf4j对应的实现类并把它加载使用，这就是SPI机制。
+Java logging loading relies on **SPI**. Unlike API, in the SPI pattern the interface is on the caller’s side, while developers only provide the concrete implementations. In the API pattern, both the interface and the concrete implementation are on the developer’s side, and the caller does not need to care about the specific implementation, but only needs to call the interface provided by the developer.
+
+The SPI mechanism gives programs the ability to load dynamically. During program runtime, it dynamically scans for the corresponding implementation classes of an interface and loads them.
+
+For example, the logging facade Slf4j in Java has corresponding implementations such as Spring Boot’s built-in and default Logback, as well as Log4j and Log4j2. When used, it dynamically loads the Slf4j implementation class that exists in the classpath and uses it. This is the SPI mechanism.
 
 <img src="https://pics.findfuns.org/java-log-structure.png" style="zoom:50%;" />
 
 ### Logback
 
-logback是Spring Boot默认使用的日志实现，即使不配置也可以直接使用。
+Logback is the default logging implementation used by Spring Boot. It can be used directly even without configuration.
 
 ```java
 @SpringBootApplication
@@ -30,14 +32,14 @@ public class RedisUsageApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(RedisUsageApplication.class, args);
-      	Logger log = LoggerFactory.getLogger("RedisUsageApplication.class");
-	log.warn("Easy bro, this is a fake warn lol.");
+        Logger log = LoggerFactory.getLogger("RedisUsageApplication.class");
+        log.warn("Easy bro, this is a fake warn lol.");
         log.error("Easy bro, this is a fake error lol.");
     }
 }
 ```
 
-也可以使用Lombok提供的注解`@Slf4j`来输出log，这样简洁一些。
+You can also use the annotation `@Slf4j` provided by Lombok to output logs, which is more concise.
 
 ```java
 @SpringBootApplication
@@ -45,80 +47,79 @@ public class RedisUsageApplication {
 public class RedisUsageApplication {
 
     public static void main(String[] args) {
-	SpringApplication.run(RedisUsageApplication.class, args);
-	log.warn("Easy bro, this is a fake warn lol.");
+        SpringApplication.run(RedisUsageApplication.class, args);
+        log.warn("Easy bro, this is a fake warn lol.");
         log.error("Easy bro, this is a fake error lol.");
     }
 }
 ```
 
-
-
 <img src="https://pics.findfuns.org/logback-default.png" style="zoom:200%;" />
 
-但是默认的配置还是不能够更加精准的满足各种需求，需要进行自定义设置。
+However, the default configuration still cannot precisely meet various needs, so custom configuration is required.
 
-在classpath下创建logback.xml或者logback-spring.xml
+Create `logback.xml` or `logback-spring.xml` under the classpath.
 
 ```xml
 <!--
-logback的日志级别： ERROR > WARN > INFO > DEBUG > TRACE
+Logback log levels: ERROR > WARN > INFO > DEBUG > TRACE
 -->
 <configuration>
     <include resource="org/springframework/boot/logging/logback/defaults.xml" />
-    <!-- 定义日志文件名称 -->
+    <!-- Define the log file name -->
     <property name="APP_NAME" value="log-files" />
-    <!-- 定义日志文件的路径 -->
+    <!-- Define the log file path -->
     <property name="LOG_PATH" value="${user.home}/${APP_NAME}" />
-    <!-- 定义日志的文件名 -->
+    <!-- Define the log file name -->
     <property name="LOG_FILE" value="${LOG_PATH}/redis-usage.log" />
 
-    <!-- 滚动记录日志，先将日志记录到指定文件，当符合某个条件时，将日志记录到其他文件 -->
+    <!-- Rolling log recording: first record logs to the specified file, and when certain conditions are met, record logs to other files -->
     <appender name="APPLICATION"
               class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <!-- 指定日志文件的名称 -->
+        <!-- Specify the log file name -->
         <file>${LOG_FILE}</file>
         <!--
-          当发生滚动时，决定 RollingFileAppender 的行为，涉及文件移动和重命名
-          TimeBasedRollingPolicy： 最常用的滚动策略，它根据时间来制定滚动策略，既负责滚动也负责触发滚动。
+          When rolling occurs, determines the behavior of RollingFileAppender, involving file moving and renaming
+          TimeBasedRollingPolicy: The most commonly used rolling strategy. It formulates the rolling strategy based on time and is responsible for both rolling and triggering rolling.
           -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!--
-           滚动时产生的文件的存放位置及文件名称
-           %d{yyyy-MM-dd}：按天进行日志滚动
-           %i：当文件大小超过maxFileSize时，按照i进行文件滚动
+           The storage location and file name of the files generated during rolling
+           %d{yyyy-MM-dd}: Roll logs daily
+           %i: When the file size exceeds maxFileSize, roll files according to i
            -->
             <fileNamePattern>${LOG_FILE}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <!--
-           可选节点，控制保留的归档文件的最大数量，超出数量就删除旧文件。假设设置每天滚动，
-           且maxHistory是7，则只保存最近7天的文件，删除之前的旧文件。
-           注意，删除旧文件时，那些为了归档而创建的目录也会被删除。
+           Optional node that controls the maximum number of archived files to retain. When exceeded, old files will be deleted.
+           For example, if rolling daily and maxHistory is set to 7, only the latest 7 days of files will be kept.
+           Note that when deleting old files, directories created for archiving will also be deleted.
            -->
             <maxHistory>7</maxHistory>
             <!--
-           当日志文件超过maxFileSize指定的大小时，根据上面提到的%i进行日志文件滚动
-           注意此处配置SizeBasedTriggeringPolicy是无法实现按文件大小进行滚动的，
-           必须配置timeBasedFileNamingAndTriggeringPolicy
+           When the log file exceeds the size specified by maxFileSize, roll according to %i mentioned above.
+           Note that configuring SizeBasedTriggeringPolicy alone cannot achieve size-based rolling.
+           You must configure timeBasedFileNamingAndTriggeringPolicy.
            -->
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>50MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
         </rollingPolicy>
-        <!-- 日志输出格式： -->
+        <!-- Log output format: -->
         <layout class="ch.qos.logback.classic.PatternLayout">
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [ %thread ] - [ %-5level ] [ %logger{50} : %line ] - %msg%n</pattern>
         </layout>
     </appender>
-    <!-- ch.qos.logback.core.ConsoleAppender 表示控制台输出 -->
+
+    <!-- ch.qos.logback.core.ConsoleAppender represents console output -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <!--
-       日志输出格式：
-           %d表示日期时间，%green 绿色
-           %thread表示线程名，%magenta 洋红色
-           %-5level：级别从左显示5个字符宽度 %highlight 高亮色
-           %logger{36} 表示logger名字最长36个字符，否则按照句点分割 %yellow 黄色
-           %msg：日志消息
-           %n是换行符
+       Log output format:
+           %d represents date and time, %green green
+           %thread represents thread name, %magenta magenta
+           %-5level: level left-aligned with 5-character width, %highlight highlighted color
+           %logger{36} means logger name up to 36 characters, otherwise split by dot, %yellow yellow
+           %msg: log message
+           %n is a newline
        -->
         <layout class="ch.qos.logback.classic.PatternLayout">
             <pattern>%green(%d{yyyy-MM-dd HH:mm:ss.SSS}) [%magenta(%thread)] %highlight(%-5level) %yellow(%logger{36}): %msg%n</pattern>
@@ -126,8 +127,9 @@ logback的日志级别： ERROR > WARN > INFO > DEBUG > TRACE
     </appender>
 
     <!--
-   root与logger是父子关系，没有特别定义则默认为root，任何一个类只会和一个logger对应，
-   要么是定义的logger，要么是root，判断的关键在于找到这个logger，然后判断这个logger的appender和level。
+   root and logger have a parent-child relationship. If not specifically defined, the default is root.
+   Any class will only correspond to one logger, either a defined logger or root.
+   The key is to find that logger and then determine its appender and level.
    -->
     <root level="info">
         <appender-ref ref="CONSOLE" />
@@ -136,16 +138,16 @@ logback的日志级别： ERROR > WARN > INFO > DEBUG > TRACE
 </configuration>
 ```
 
-log的配置中有这么几个标签
+In log configuration, there are several tags:
 
-- property： 可以自定义变量名和变量值，方便拼接路径等。
-- appender： 每一个appender对应一个日志的输出地点
-  - layout： 日志的输出格式
-  - rollingPolicy： 日志的滚动策略
+- property: You can customize variable names and values to facilitate path concatenation.
+- appender: Each appender corresponds to a log output destination.
+  - layout: Log output format
+  - rollingPolicy: Log rolling strategy
 
-通过这些标签可以实现日志的完全自定义。
+Through these tags, full customization of logging can be achieved.
 
-使用logback时可以在application.yml或者application.properties中加入logback的配置，但也可以不配置，因为Spring Boot的默认行为是扫描classpath下是否有logback.xml或者logback-spring.xml。
+When using Logback, you can add Logback configuration in `application.yml` or `application.properties`, but it is not necessary, because Spring Boot’s default behavior is to scan whether there is a `logback.xml` or `logback-spring.xml` under the classpath.
 
 ```yaml
 logging:
@@ -154,21 +156,21 @@ logging:
 
 ![](https://pics.findfuns.org/logback-customized.png)
 
-同时日志文件也可以在对应的目录下找到
+At the same time, the log files can be found in the corresponding directory.
 
 <img src="https://pics.findfuns.org/log-files.png" style="zoom:50%;" />
 
 ## Log4j2
 
-log4j2和logback都是slf4j的具体实现，但在实际应用中二者不能同时存在，否则会报错，导致无法正常加载日志的实现类。
+Log4j2 and Logback are both implementations of Slf4j, but in practical applications they cannot coexist; otherwise, an error will occur and the logging implementation class cannot be loaded properly.
 
-所以在使用log4j2时需要在pom中显示的剔除logback依赖，同时加入log4j2的依赖。
+Therefore, when using Log4j2, you need to explicitly exclude the Logback dependency in `pom.xml` and add the Log4j2 dependency.
 
 ```xml
 <dependency>
   <groupId>org.springframework.boot</groupId>
   <artifactId>spring-boot-starter-web</artifactId>
-  <!--剔除logback的依赖-->
+  <!-- Exclude Logback dependency -->
   	<exclusions>
       <exclusion>
         <groupId>org.springframework.boot</groupId>
@@ -176,146 +178,126 @@ log4j2和logback都是slf4j的具体实现，但在实际应用中二者不能�
       </exclusion>
   	</exclusions>
 </dependency>
-<!--log4j2依赖-->
-	<dependency>
+<!-- Log4j2 dependency -->
+<dependency>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-log4j2</artifactId>
 </dependency>
 ```
 
-在classpath下创建log4j2.xml
+Create `log4j2.xml` under the classpath.
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- log4j2的日志级别： OFF > FATAL > ERROR > WARN > INFO > DEBUG > ALL -->
+<!-- Log4j2 log levels: OFF > FATAL > ERROR > WARN > INFO > DEBUG > ALL -->
 <Configuration>
     <!--<Configuration status="WARN" monitorInterval="30"> -->
     <properties>
         <property name="LOG_HOME">./service-logs</property>
     </properties>
     <Appenders>
-        <!--*********************控制台日志***********************-->
+        <!--*********************Console Log***********************-->
         <Console name="consoleAppender" target="SYSTEM_OUT">
-            <!--设置日志格式及颜色-->
+            <!-- Set log format and color -->
             <PatternLayout
                     pattern="%style{%d{ISO8601}}{bright,green} %highlight{%-5level} [%style{%t}{bright,blue}] %style{%C{}}{bright,yellow}: %msg%n%style{%throwable}{red}"
                     disableAnsi="false" noConsoleNoAnsi="false"/>
         </Console>
 
-        <!--*********************文件日志***********************-->
-        <!--all级别日志-->
+        <!--*********************File Log***********************-->
+        <!-- all level logs -->
         <RollingFile name="allFileAppender"
                      fileName="${LOG_HOME}/all.log"
                      filePattern="${LOG_HOME}/$${date:yyyy-MM}/all-%d{yyyy-MM-dd}-%i.log.gz">
-            <!--设置日志格式-->
+            <!-- Set log format -->
             <PatternLayout>
                 <pattern>%d %p %C{} [%t] %m%n</pattern>
             </PatternLayout>
             <Policies>
-                <!-- 设置日志文件切分参数 -->
+                <!-- Set log file splitting parameters -->
                 <!--<OnStartupTriggeringPolicy/>-->
-                <!--设置日志基础文件大小，超过该大小就触发日志文件滚动更新-->
+                <!-- Set base log file size, roll when exceeding this size -->
                 <SizeBasedTriggeringPolicy size="100 MB"/>
-                <!--设置日志文件滚动更新的时间，依赖于文件命名filePattern的设置-->
+                <!-- Set time-based rolling, depends on filePattern -->
                 <TimeBasedTriggeringPolicy/>
             </Policies>
-            <!--设置日志的文件个数上限，不设置默认为7个，超过大小后会被覆盖；依赖于filePattern中的%i-->
+            <!-- Set maximum number of log files -->
             <DefaultRolloverStrategy max="100"/>
         </RollingFile>
 
-        <!--debug级别日志-->
+        <!-- debug level logs -->
         <RollingFile name="debugFileAppender"
                      fileName="${LOG_HOME}/debug.log"
                      filePattern="${LOG_HOME}/$${date:yyyy-MM}/debug-%d{yyyy-MM-dd}-%i.log.gz">
             <Filters>
-                <!--过滤掉info及更高级别日志-->
+                <!-- Filter out info and higher level logs -->
                 <ThresholdFilter level="info" onMatch="DENY" onMismatch="NEUTRAL"/>
             </Filters>
-            <!--设置日志格式-->
             <PatternLayout>
                 <pattern>%d %p %C{} [%t] %m%n</pattern>
             </PatternLayout>
             <Policies>
-                <!-- 设置日志文件切分参数 -->
                 <!--<OnStartupTriggeringPolicy/>-->
-                <!--设置日志基础文件大小，超过该大小就触发日志文件滚动更新-->
                 <SizeBasedTriggeringPolicy size="100 MB"/>
-                <!--设置日志文件滚动更新的时间，依赖于文件命名filePattern的设置-->
                 <TimeBasedTriggeringPolicy/>
             </Policies>
-            <!--设置日志的文件个数上限，不设置默认为7个，超过大小后会被覆盖；依赖于filePattern中的%i-->
             <DefaultRolloverStrategy max="100"/>
         </RollingFile>
 
-        <!--info级别日志-->
+        <!-- info level logs -->
         <RollingFile name="infoFileAppender"
                      fileName="${LOG_HOME}/info.log"
                      filePattern="${LOG_HOME}/$${date:yyyy-MM}/info-%d{yyyy-MM-dd}-%i.log.gz">
             <Filters>
-                <!--过滤掉warn及更高级别日志-->
+                <!-- Filter out warn and higher level logs -->
                 <ThresholdFilter level="warn" onMatch="DENY" onMismatch="NEUTRAL"/>
             </Filters>
-            <!--设置日志格式-->
             <PatternLayout>
                 <pattern>%d %p %C{} [%t] %m%n</pattern>
             </PatternLayout>
             <Policies>
-            <!-- 设置日志文件切分参数 -->
-            <!--<OnStartupTriggeringPolicy/>-->
-            <!--设置日志基础文件大小，超过该大小就触发日志文件滚动更新-->
-            <SizeBasedTriggeringPolicy size="100 MB"/>
-            <!--设置日志文件滚动更新的时间，依赖于文件命名filePattern的设置-->
-            <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+                <!--<OnStartupTriggeringPolicy/>-->
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true" />
             </Policies>
-            <!--设置日志的文件个数上限，不设置默认为7个，超过大小后会被覆盖；依赖于filePattern中的%i-->
             <!--<DefaultRolloverStrategy max="100"/>-->
         </RollingFile>
 
-        <!--warn级别日志-->
+        <!-- warn level logs -->
         <RollingFile name="warnFileAppender"
                      fileName="${LOG_HOME}/warn.log"
                      filePattern="${LOG_HOME}/$${date:yyyy-MM}/warn-%d{yyyy-MM-dd}-%i.log.gz">
             <Filters>
-                <!--过滤掉error及更高级别日志-->
+                <!-- Filter out error and higher level logs -->
                 <ThresholdFilter level="error" onMatch="DENY" onMismatch="NEUTRAL"/>
             </Filters>
-            <!--设置日志格式-->
             <PatternLayout>
                 <pattern>%d %p %C{} [%t] %m%n</pattern>
             </PatternLayout>
             <Policies>
-                <!-- 设置日志文件切分参数 -->
                 <!--<OnStartupTriggeringPolicy/>-->
-                <!--设置日志基础文件大小，超过该大小就触发日志文件滚动更新-->
                 <SizeBasedTriggeringPolicy size="100 MB"/>
-                <!--设置日志文件滚动更新的时间，依赖于文件命名filePattern的设置-->
                 <TimeBasedTriggeringPolicy/>
             </Policies>
-            <!--设置日志的文件个数上限，不设置默认为7个，超过大小后会被覆盖；依赖于filePattern中的%i-->
             <DefaultRolloverStrategy max="100"/>
         </RollingFile>
 
-        <!--error及更高级别日志-->
+        <!-- error and higher level logs -->
         <RollingFile name="errorFileAppender"
                      fileName="${LOG_HOME}/error.log"
                      filePattern="${LOG_HOME}/$${date:yyyy-MM}/error-%d{yyyy-MM-dd}-%i.log.gz">
-            <!--设置日志格式-->
             <PatternLayout>
                 <pattern>%d %p %C{} [%t] %m%n</pattern>
             </PatternLayout>
             <Policies>
-                <!-- 设置日志文件切分参数 -->
                 <!--<OnStartupTriggeringPolicy/>-->
-                <!--设置日志基础文件大小，超过该大小就触发日志文件滚动更新-->
                 <SizeBasedTriggeringPolicy size="100 MB"/>
-                <!--设置日志文件滚动更新的时间，依赖于文件命名filePattern的设置-->
                 <TimeBasedTriggeringPolicy/>
             </Policies>
-            <!--设置日志的文件个数上限，不设置默认为7个，超过大小后会被覆盖；依赖于filePattern中的%i-->
             <DefaultRolloverStrategy max="100"/>
         </RollingFile>
 
-        <!--json格式error级别日志-->
+        <!-- JSON format error level logs -->
         <RollingFile name="errorJsonAppender"
                      fileName="${LOG_HOME}/error-json.log"
                      filePattern="${LOG_HOME}/error-json-%d{yyyy-MM-dd}-%i.log.gz">
@@ -328,7 +310,7 @@ log4j2和logback都是slf4j的具体实现，但在实际应用中二者不能�
     </Appenders>
 
     <Loggers>
-        <!-- 根日志设置 -->
+        <!-- Root logger configuration -->
         <Root level="debug">
             <AppenderRef ref="allFileAppender" level="all"/>
             <AppenderRef ref="consoleAppender" level="debug"/>
@@ -339,26 +321,26 @@ log4j2和logback都是slf4j的具体实现，但在实际应用中二者不能�
             <AppenderRef ref="errorJsonAppender" level="error"/>
         </Root>
 
-        <!--spring日志-->
+        <!-- spring logs -->
         <Logger name="org.springframework" level="info"/>
-        <!--druid数据源日志-->
+        <!-- druid datasource logs -->
         <Logger name="druid.sql.Statement" level="warn"/>
-        <!-- mybatis日志 -->
+        <!-- mybatis logs -->
         <Logger name="com.mybatis" level="warn"/>
     </Loggers>
 
 </Configuration>
 ```
 
-同样也可以通过appender和patternLayout等标签来设置日志的输出。
+Similarly, you can configure log output using tags such as appender and PatternLayout.
 
-然后在application.properties中加上log4j2的配置
+Then add the Log4j2 configuration in `application.properties`.
 
 ```properties
 logging.config=classpath:log4j2.xml
 ```
 
-测试一下，可以通过Lombok的`@Log4j2`注释使用日志
+Test it. You can use Lombok’s `@Log4j2` annotation to use logging.
 
 ```java
 @SpringBootApplication
@@ -374,6 +356,213 @@ public class Log4j2UsageApplication {
 
 ![](https://pics.findfuns.org/log4j2.png)
 
-同时按照log4j2.xml的配置对应的目录下可以找到按照日志级别分类的记录
+At the same time, according to the configuration in `log4j2.xml`, you can find log records categorized by level in the corresponding directory.
 
 <img src="https://pics.findfuns.org/log4j2-files.png" style="zoom:50%;" />
+## Introduction
+
+Over the years, Java has developed a complete logging system, which is divided into a logging facade and specific logging implementations. The logging facade acts like an interface, while the various logging frameworks are different implementations of that facade.
+
+Java logging loading relies on **SPI**. Unlike API, in the SPI pattern the interface is on the caller’s side, while developers only provide concrete implementations. In the API pattern, both the interface and the implementation are provided by the developer, and the caller only needs to use the interface without caring about the implementation details.
+
+The SPI mechanism gives programs the ability to load implementations dynamically. During runtime, the program scans for implementation classes corresponding to an interface and loads them dynamically.
+
+For example, the logging facade Slf4j in Java has multiple implementations, such as Spring Boot’s default Logback, as well as Log4j and Log4j2. At runtime, it dynamically loads the corresponding Slf4j implementation found in the classpath. This is the SPI mechanism in action.
+
+<img src="https://pics.findfuns.org/java-log-structure.png" style="zoom:50%;" />
+
+### Logback
+
+Logback is the default logging implementation used by Spring Boot. It can be used directly even without configuration.
+
+```java
+@SpringBootApplication
+public class RedisUsageApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(RedisUsageApplication.class, args);
+        Logger log = LoggerFactory.getLogger("RedisUsageApplication.class");
+        log.warn("Easy bro, this is a fake warn lol.");
+        log.error("Easy bro, this is a fake error lol.");
+    }
+}
+```
+
+You can also use the Lombok annotation `@Slf4j` to output logs, which is more concise.
+
+```java
+@SpringBootApplication
+@Slf4j
+public class RedisUsageApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(RedisUsageApplication.class, args);
+        log.warn("Easy bro, this is a fake warn lol.");
+        log.error("Easy bro, this is a fake error lol.");
+    }
+}
+```
+
+<img src="https://pics.findfuns.org/logback-default.png" style="zoom:200%;" />
+
+However, the default configuration cannot precisely meet various needs, so custom configuration is often required.
+
+Create `logback.xml` or `logback-spring.xml` under the classpath:
+
+```xml
+<!--
+Logback log levels: ERROR > WARN > INFO > DEBUG > TRACE
+-->
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+    <!-- Define the log file name -->
+    <property name="APP_NAME" value="log-files" />
+    <!-- Define the log file path -->
+    <property name="LOG_PATH" value="${user.home}/${APP_NAME}" />
+    <!-- Define the full log file name -->
+    <property name="LOG_FILE" value="${LOG_PATH}/redis-usage.log" />
+
+    <!-- Rolling file appender -->
+    <appender name="APPLICATION"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_FILE}</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_FILE}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxHistory>7</maxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy 
+                class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>50MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [ %thread ] - [ %-5level ] [ %logger{50} : %line ] - %msg%n</pattern>
+        </layout>
+    </appender>
+
+    <!-- Console output -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%green(%d{yyyy-MM-dd HH:mm:ss.SSS}) [%magenta(%thread)] %highlight(%-5level) %yellow(%logger{36}): %msg%n</pattern>
+        </layout>
+    </appender>
+
+    <root level="info">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="APPLICATION" />
+    </root>
+</configuration>
+```
+
+Key tags in Logback configuration:
+
+- `property`: Define custom variables for easier path construction.
+- `appender`: Each appender represents a log output destination.
+  - `layout`: Defines the log output format.
+  - `rollingPolicy`: Defines the log rolling strategy.
+
+Spring Boot automatically scans for `logback.xml` or `logback-spring.xml` under the classpath.
+
+```yaml
+logging:
+  config: classpath:logback-spring.xml
+```
+
+![](https://pics.findfuns.org/logback-customized.png)
+
+Log files can be found in the corresponding directory:
+
+<img src="https://pics.findfuns.org/log-files.png" style="zoom:50%;" />
+
+## Log4j2
+
+Both Log4j2 and Logback are implementations of Slf4j, but they cannot coexist in the same project. Otherwise, an error will occur because multiple logging implementations are detected.
+
+When using Log4j2, you need to exclude Logback in `pom.xml` and add the Log4j2 dependency:
+
+```xml
+<dependency>
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-starter-web</artifactId>
+  <exclusions>
+      <exclusion>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-logging</artifactId>
+      </exclusion>
+  </exclusions>
+</dependency>
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-log4j2</artifactId>
+</dependency>
+```
+
+Create `log4j2.xml` under the classpath:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Log4j2 log levels: OFF > FATAL > ERROR > WARN > INFO > DEBUG > ALL -->
+<Configuration>
+    <properties>
+        <property name="LOG_HOME">./service-logs</property>
+    </properties>
+    <Appenders>
+        <Console name="consoleAppender" target="SYSTEM_OUT">
+            <PatternLayout
+                pattern="%style{%d{ISO8601}}{bright,green} %highlight{%-5level} [%style{%t}{bright,blue}] %style{%C{}}{bright,yellow}: %msg%n%style{%throwable}{red}"
+                disableAnsi="false" noConsoleNoAnsi="false"/>
+        </Console>
+
+        <RollingFile name="allFileAppender"
+                     fileName="${LOG_HOME}/all.log"
+                     filePattern="${LOG_HOME}/$${date:yyyy-MM}/all-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout>
+                <pattern>%d %p %C{} [%t] %m%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+                <TimeBasedTriggeringPolicy/>
+            </Policies>
+            <DefaultRolloverStrategy max="100"/>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <Root level="debug">
+            <AppenderRef ref="allFileAppender" level="all"/>
+            <AppenderRef ref="consoleAppender" level="debug"/>
+        </Root>
+
+        <Logger name="org.springframework" level="info"/>
+        <Logger name="druid.sql.Statement" level="warn"/>
+        <Logger name="com.mybatis" level="warn"/>
+    </Loggers>
+</Configuration>
+```
+
+Add the configuration in `application.properties`:
+
+```properties
+logging.config=classpath:log4j2.xml
+```
+
+Test with Lombok’s `@Log4j2`:
+
+```java
+@SpringBootApplication
+@Log4j2
+public class Log4j2UsageApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(Log4j2UsageApplication.class, args);
+        log.warn("this is from log4j2.");
+    }
+}
+```
+
+![](https://pics.findfuns.org/log4j2.png)
+
+According to the `log4j2.xml` configuration, you can find logs categorized by level in the corresponding directory:
+
+<img src="https://pics.findfuns.org/log4j2-files.png" style="zoom:50%;" />
+

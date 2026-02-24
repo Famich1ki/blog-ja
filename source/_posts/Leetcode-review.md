@@ -1,5 +1,5 @@
 ---
-title: Leetcode review
+title: Leetcode Review
 date: 2024-10-15 22:53:51
 tags:
   - Data Structure and Algorithm
@@ -11,7 +11,7 @@ cover: https://pics.findfuns.org/leetcode.jpg
 ---
 # [399. Evaluate Division](https://leetcode.com/problems/evaluate-division/)
 
-问题描述：
+Problem Description:
 
 You are given an array of variable pairs `equations` and an array of real numbers `values`, where `equations[i] = [Ai, Bi]` and `values[i]` represent the equation `Ai / Bi = values[i]`. Each `Ai` or `Bi` is a string that represents a single variable.
 
@@ -51,11 +51,11 @@ Output: [0.50000,2.00000,-1.00000,-1.00000]
 
 <img src="https://pics.findfuns.org/Problem 399.png" style="zoom:50%;" />
 
-这是一道典型的图论相关问题，思路是构造一个邻接矩阵`matrix`， `matrix[i][j]`代表`i/j`的值，如果没有这个值就为0。
+This is a typical graph-related problem. The idea is to construct an adjacency matrix `matrix`, where `matrix[i][j]` represents the value of `i / j`. If there is no such value, it is set to 0.
 
-构造好这个矩阵之后就可以通过BFS去递归的寻找关系，比如在Example 1中需要找到`a/c`，那么就可以先通过dfs找到`a/b`，然后再通过dfs进一步找到`b/c`从而获得`a/c`。
+After constructing the matrix, we can use DFS to recursively search for the relationship. For example, in Example 1, to compute `a / c`, we first find `a / b` through DFS, then continue to find `b / c`, and multiply them to obtain `a / c`.
 
-具体的代码思路如下
+The detailed implementation is as follows:
 
 ```java
 class Solution {
@@ -119,40 +119,45 @@ class Solution {
 }
 ```
 
-时间复杂度分析：
+Time Complexity Analysis:
 
-- 构建map映射，即字符串和matrix中对应下标时的复杂度为`O(E)`,E为Equations的大小。
+- Building the map (mapping strings to matrix indices) takes `O(E)`, where `E` is the number of equations.
 
-- 构建邻接矩阵时的复杂度为`O(E)`。
+- Constructing the adjacency matrix takes `O(E)`.
 
-- dfs方法在调用时最坏情况下会遍历邻接矩阵的每一个值，假设共有n个不同的字符串，即邻接矩阵有n^2个值，所以时间复杂度为`O(n^2)`。
-- for循环遍历queries时，假设共有Q个query，那么每次调用一次dfs，时间复杂度为`O(Q * n^2)`
+- In the worst case, the DFS method may traverse every value in the adjacency matrix. Suppose there are `n` distinct variables, so the matrix contains `n^2` values. The time complexity of DFS is `O(n^2)`.
 
-综上时间复杂度为`O(E + Q * n^2)`。
+- When iterating through `queries`, suppose there are `Q` queries. Each query calls DFS once, so the time complexity is `O(Q * n^2)`.
 
-空间复杂度分析：
+Overall time complexity is `O(E + Q * n^2)`.
 
-- matrix共有n^2个节点，复杂度为`O(n^2)`
-- map共存储n个节点，复杂度为`O(n)`
-- dfs时递归的深度可能会达到所有节点，复杂度为`O(n)`
-- dfs时的set最坏情况会包含所有节点，复杂度为`O(n)`
-- res数组假设有Q个query，复杂度为`O(Q)`
+Space Complexity Analysis:
 
-综上空间复杂度为`O(Q + n^2)`
+- The matrix contains `n^2` entries, so the complexity is `O(n^2)`.
+
+- The map stores `n` entries, so the complexity is `O(n)`.
+
+- The recursion depth of DFS may reach all nodes, so the complexity is `O(n)`.
+
+- The set used in DFS may contain all nodes in the worst case, so the complexity is `O(n)`.
+
+- The result array `res` contains `Q` entries, so the complexity is `O(Q)`.
+
+Overall space complexity is `O(Q + n^2)`.
 
 
 
 # [994. Rotting Oranges](https://leetcode.com/problems/rotting-oranges/)
 
-问题描述：
+Problem Description:
 
 ![](https://pics.findfuns.org/Problem 994.png)
 
 
 
-思路是先遍历grid，如果找到“烂橘子”就加入到Queue中，遍历完成之后对Queue中的所有“烂橘子”进行BFS并记录每次BFS的时间，动态更新最长时间。最后检查一遍grid，如果还存在新鲜的橘子就返回-1，如果没有就返回最长时间。
+The idea is to first traverse the grid. If we find a rotten orange, we add it to a `Queue`. After the traversal is complete, we perform BFS on all rotten oranges in the queue and record the time for each BFS step, dynamically updating the maximum time. Finally, we scan the grid again. If there are still fresh oranges left, return -1; otherwise, return the maximum time.
 
-代码如下：
+The code is as follows:
 
 ```java
 class Solution {
@@ -192,30 +197,32 @@ class Solution {
 }
 ```
 
-时间复杂度分析：
+Time Complexity Analysis:
 
-- 两个for循环的时间复杂度为`O(n*m)`，n和m分别为grid的长和宽
-- bfs最坏情况下会遍历每一个节点，时间复杂度为O(n*m)。
+- The two nested `for` loops take `O(n*m)`, where `n` and `m` are the number of rows and columns of the grid.
+- In the worst case, BFS traverses every cell once, so the time complexity is `O(n*m)`.
 
-综上时间复杂度为`O(n*m)`
+Overall time complexity: `O(n*m)`
 
-空间复杂度分析：
+Space Complexity Analysis:
 
-- queue最坏情况下会包含所有节点，空间复杂度为`O(n*m)`
+- In the worst case, the queue may contain all cells, so the space complexity is `O(n*m)`.
 
-综上空间复杂度为`O(n*m)`
+Overall space complexity: `O(n*m)`
+
+
 
 # [875. Koko Eating Bananas](https://leetcode.com/problems/koko-eating-bananas/)
 
-Koko loves to eat bananas. There are `n` piles of bananas, the `ith` pile has `piles[i]` bananas. The guards have gone and will come back in `h` hours.
+Koko loves to eat bananas. There are `n` piles of bananas, and the `ith` pile has `piles[i]` bananas. The guards have gone and will come back in `h` hours.
 
-Koko can decide her bananas-per-hour eating speed of `k`. Each hour, she chooses some pile of bananas and eats `k` bananas from that pile. If the pile has less than `k` bananas, she eats all of them instead and will not eat any more bananas during this hour.
+Koko can decide her bananas-per-hour eating speed `k`. Each hour, she chooses one pile of bananas and eats `k` bananas from that pile. If the pile has fewer than `k` bananas, she eats all of them and will not eat any more bananas during that hour.
 
-Koko likes to eat slowly but still wants to finish eating all the bananas before the guards return.
+Koko likes to eat slowly but still wants to finish all the bananas before the guards return.
 
 Return *the minimum integer* `k` *such that she can eat all the bananas within* `h` *hours*.
 
- 
+
 
 **Example 1:**
 
@@ -238,9 +245,9 @@ Input: piles = [30,11,23,4,20], h = 6
 Output: 23
 ```
 
-可以使用二分查找不断缩小符合要求的最小速度，直到找到最小的速度
+We can use binary search to continuously narrow down the minimum valid eating speed until we find the smallest possible speed.
 
-代码如下：
+The code is as follows:
 
 ```java
 class Solution {
@@ -273,17 +280,19 @@ class Solution {
 }
 ```
 
-因为每一堆香蕉的最大数量为10^9，所以可以设置最大速度为10^9，最小速度为1。然后就可以进行二分查找，不断缩小速度。
+Since the maximum number of bananas in a single pile is `10^9`, we can set the maximum possible speed to `10^9` and the minimum speed to `1`. Then we apply binary search to continuously narrow the range.
 
-值得注意的是在`check()方法`中用于记录用时的变量`hours`需要设置为long，不然会有溢出的风险。
+It is important to note that in the `check()` method, the variable `hours` must be declared as `long` to avoid overflow.
 
-时间复杂度分析：
+Time Complexity Analysis:
 
-- piles的长度为n，每次二分查找都需要遍历一次piles数组，复杂度为`O(n)`
-- 二分查找的范围是1-10^9，所以复杂度为`O(10^9)`
-- 综上时间复杂度为`O(10^9n)`
+- Let `n` be the length of `piles`. Each binary search step requires traversing the `piles` array once, which takes `O(n)`.
+- The search range is from `1` to `10^9`, and binary search runs in `O(log 10^9)` time.
+- Therefore, the overall time complexity is `O(n log 10^9)`.
 
-空间复杂度为`O(1)`
+Space Complexity:
+
+- `O(1)`
 
 
 
@@ -311,11 +320,11 @@ Output: 7
 Explanation: The maximum width ramp is achieved at (i, j) = (2, 9): nums[2] = 1 and nums[9] = 1.
 ```
 
-这道题其实简单来说就是找到和每个元素对应的不小于它的最远的元素，并且得到距离的最大值。
+In simple terms, this problem asks us to find, for each element, the farthest element to its right that is greater than or equal to it, and then compute the maximum possible distance.
 
-具体的做法是维护一个单调递减栈，从左向右遍历。再从右向左遍历，如果栈顶的元素小于等于遍历到的元素，就出栈并记录最大距离，知道栈空。
+The specific approach is to maintain a **monotonically decreasing stack** while traversing from left to right. Then, traverse from right to left. If the value at the top index of the stack is less than or equal to the current element, pop it from the stack and update the maximum width. Continue this process until the stack becomes empty.
 
-代码如下：
+The code is as follows:
 
 ```java
 class Solution {
@@ -338,18 +347,18 @@ class Solution {
 }
 ```
 
-时间复杂度分析：
+## Time Complexity Analysis
 
-- 维护单调栈需要遍历每个元素， `O(n)`。
-- 第二次从右向左遍历元素最坏情况下需要遍历全部元素，`O(n)`。
+- Maintaining the monotonic stack requires traversing each element once: `O(n)`.
+- The second traversal from right to left processes each element at most once in the worst case: `O(n)`.
 
-时间复杂度为`O(n)`。
+Therefore, the overall time complexity is `O(n)`.
 
-空间复杂度分析:
+## Space Complexity Analysis
 
-- 最坏情况`stack`需要记录全部元素， `O(n)`。
+- In the worst case, the `stack` stores all indices: `O(n)`.
 
-空间复杂度为`O(n)`。
+Therefore, the space complexity is `O(n)`.
 
 # [2406. Divide Intervals Into Minimum Number of Groups](https://leetcode.com/problems/divide-intervals-into-minimum-number-of-groups/)
 
@@ -427,7 +436,7 @@ You have `k` lists of sorted integers in **non-decreasing order**. Find the **sm
 
 We define the range `[a, b]` is smaller than range `[c, d]` if `b - a < d - c` **or** `a < c` if `b - a == d - c`.
 
-
+---
 
 **Example 1:**
 
@@ -435,7 +444,7 @@ We define the range `[a, b]` is smaller than range `[c, d]` if `b - a < d - c` *
 Input: nums = [[4,10,15,24,26],[0,9,12,20],[5,18,22,30]]
 Output: [20,24]
 Explanation: 
-List 1: [4, 10, 15, 24,26], 24 is in range [20,24].
+List 1: [4, 10, 15, 24, 26], 24 is in range [20,24].
 List 2: [0, 9, 12, 20], 20 is in range [20,24].
 List 3: [5, 18, 22, 30], 22 is in range [20,24].
 ```
@@ -447,9 +456,9 @@ Input: nums = [[1,2,3],[1,2,3],[1,2,3]]
 Output: [1,1]
 ```
 
-涉及到“最大”“最小”问题时，往往需要考虑使用heap，因为这类问题需要频繁地获得最大最小值，而堆可以实现在`O(1)`的复杂度下得到最值，从而降低时间复杂度。
+When a problem involves finding a “maximum” or “minimum”, it is often a good idea to consider using a **heap**, because we frequently need to retrieve the smallest or largest value efficiently. A heap allows us to get the minimum (or maximum) in `O(1)` time and update it in `O(log k)` time, which helps reduce the overall time complexity.
 
-每一轮将一列元素存入heap，将最小值移出，并且动态的更新最大最小值，并记录range，再将移出元素的下一个元素加入heap，直到heap中的元素数量小于nums中数组的数量，最终获得的最小range即为答案。
+At each step, we put one element from each list into the heap. We remove the minimum element, dynamically maintain the current maximum value, compute the current range, and update the result if necessary. Then we push the next element from the same list as the removed element into the heap. We repeat this process until the heap size becomes smaller than `k`. The smallest recorded range is the final answer.
 
 ```java
 class Solution {
@@ -484,61 +493,67 @@ class Solution {
 ```
 
 ```
-例一的每一轮处理过程如下
+The step-by-step process for Example 1 is as follows:
 
-heap 0 4 5
-max 5
-min 0
-range 5
+heap: 0 4 5
+max: 5
+min: 0
+range: 5
 
-heap 4 5 9
-max 9
-min 4
-range 5
+heap: 4 5 9
+max: 9
+min: 4
+range: 5
 
-heap 5 9 10
-max 10
-min 5
-range 5
+heap: 5 9 10
+max: 10
+min: 5
+range: 5
 
-heap 9 10 18
-max 18
-min 9
-range 9
+heap: 9 10 18
+max: 18
+min: 9
+range: 9
 
-heap 10 12 18
-max 18
-min 10
-range 8
+heap: 10 12 18
+max: 18
+min: 10
+range: 8
 
-heap 12 15 18
-max 18
-min 12 
-range 6
+heap: 12 15 18
+max: 18
+min: 12 
+range: 6
 
-heap 15 18 20
-min 15
-max 20
-range 5
+heap: 15 18 20
+min: 15
+max: 20
+range: 5
 
-heap 18 20 24
-min 18
-max 24
-range 6
+heap: 18 20 24
+min: 18
+max: 24
+range: 6
 
-heap 20 22 24
-min 20
-max 24
-range 4
+heap: 20 22 24
+min: 20
+max: 24
+range: 4
 ```
 
-时间复杂度分析：
+## Time Complexity Analysis
 
-- 设nums中共有k个数组，设共有N个元素，最坏情况下heap需要遍历每一个元素，每次插入和删除元素的复杂度为`O(logk)`，时间复杂度为`O(Nlogk)`。
+- Suppose there are `k` lists and a total of `N` elements.
+- In the worst case, every element is pushed into and popped from the heap once.
+- Each heap operation costs `O(log k)`.
 
-空间复杂度分析：
+Therefore, the total time complexity is `O(N log k)`.
 
-- heap中始终存在k个元素，空间复杂度为`O(k)`
+## Space Complexity Analysis
+
+- The heap always contains at most `k` elements.
+
+Therefore, the space complexity is `O(k)`.
 
 # [1942. The Number of the Smallest Unoccupied Chair](https://leetcode.com/problems/the-number-of-the-smallest-unoccupied-chair/)
 
@@ -551,6 +566,8 @@ When a friend leaves the party, their chair becomes unoccupied at the moment the
 You are given a **0-indexed** 2D integer array `times` where `times[i] = [arrivali, leavingi]`, indicating the arrival and leaving times of the `ith` friend respectively, and an integer `targetFriend`. All arrival times are **distinct**.
 
 Return *the **chair number** that the friend numbered* `targetFriend` *will sit on*.
+
+---
 
 **Example 1:**
 
@@ -581,10 +598,35 @@ Explanation:
 Since friend 0 sat on chair 2, we return 2.
 ```
 
-- 这个问题可以考虑将每个人的时间拆开，分成开始时间和结束时间。将拆开后的时间以数组的形式存入小顶堆中，arr[0]是时间，arr[1]用来记录是第几个人，arr[2]用来记录是到达时间还是离开时间。以arr[0]为依据排序。
-- 同时，一个优先队列来记录当前时刻下空的椅子，这样总是可以得到最小的可以利用的椅子。
-- 用一个Map来记录当前时刻下已经被占用的椅子，key为人的序号，value是椅子序号。
-- 具体的流程是，按发生顺序依次遍历每一个时间。如果为到达时间，就从availableChairs中分配一把椅子，并存入occupiedChairs。并且检查是否是targetFriend；如果为结束时间，就将对应的occupiedChairs中的椅子放回avaliableChairs。
+## Approach
+
+- We can split each person's time into two events: an arrival event and a leaving event.  
+  Store them in a min-heap as arrays:
+    - `arr[0]` → time
+    - `arr[1]` → friend number
+    - `arr[2]` → event type (1 = arrival, 0 = leaving)  
+      Sort primarily by time.
+
+- Use another priority queue `availableChairs` to keep track of currently available chairs, so we can always obtain the smallest available chair.
+
+- Use a `Map` called `occupiedChairs` to record which chair each friend is currently using.
+    - Key → friend number
+    - Value → chair number
+
+### Process
+
+Traverse all events in chronological order:
+
+- If it is an **arrival event**:
+    - Take the smallest chair from `availableChairs`
+    - If the friend is `targetFriend`, return the chair immediately
+    - Otherwise, record it in `occupiedChairs`
+
+- If it is a **leaving event**:
+    - Retrieve the chair from `occupiedChairs`
+    - Put the chair back into `availableChairs`
+
+---
 
 ```java
 class Solution {
@@ -631,21 +673,33 @@ class Solution {
 }
 ```
 
-时间复杂度分析：
+## Time Complexity Analysis
 
-- 设一共有n个人，events共插入2n次，每次插入的时间复杂度为`O(logn)`，复杂度为`O(2nlog2n) = O(nlogn)`。
-- 将所有椅子加入avaliableChairs，时间复杂度为`O(nlogn)`。
-- 依次遍历每个event，最坏情况下每次都要取一个新的椅子，从avaliableChairs取椅子复杂度为`O(logn)`, 插入occupiedChairs复杂度为(O(1))，总复杂度为`2n(O(logn) + O(1)) = O(nlogn)`。
+- Suppose there are `n` friends.
+- We insert `2n` events into the heap. Each insertion costs `O(log n)`, so this part costs `O(n log n)`.
+- Adding all chairs into `availableChairs` costs `O(n log n)`.
+- Processing each event:
+    - Polling from `availableChairs` costs `O(log n)`
+    - Inserting into `occupiedChairs` costs `O(1)`
+    - Overall worst-case cost is `O(n log n)`
 
-综上时间复杂度为`O(nlogn)`。
+Therefore, the total time complexity is:
 
-空间复杂度分析：
+```
+O(n log n)
+```
 
-- events需要`O(2n)`
-- avaliableChair最多需要`O(n)`
-- occupiedChair最多需要`O(n)`
+## Space Complexity Analysis
 
-综上空间复杂度为`O(n)`。
+- `events` requires `O(2n)`
+- `availableChairs` requires up to `O(n)`
+- `occupiedChairs` requires up to `O(n)`
+
+Therefore, the overall space complexity is:
+
+```
+O(n)
+```
 
 
 
@@ -654,6 +708,8 @@ class Solution {
 You have `k` lists of sorted integers in **non-decreasing order**. Find the **smallest** range that includes at least one number from each of the `k` lists.
 
 We define the range `[a, b]` is smaller than range `[c, d]` if `b - a < d - c` **or** `a < c` if `b - a == d - c`.
+
+---
 
 **Example 1:**
 
@@ -673,7 +729,7 @@ Input: nums = [[1,2,3],[1,2,3],[1,2,3]]
 Output: [1,1]
 ```
 
-
+---
 
 **Constraints:**
 
@@ -683,16 +739,28 @@ Output: [1,1]
 - `-10^5 <= nums[i][j] <= 10^5`
 - `nums[i]` is sorted in **non-decreasing** order.
 
+---
 
+## Approach
 
-这个题的核心在于要保证选取的范围至少包含每个子数组中一个元素。考虑到这一点可以在遍历时使用一个容器，并始终保证容器中恰好有**k**个元素(k为子数组的数量)。同时在每次遍历时需要获得最大值和最小值来确定范围，所以理所应当使用一个最小堆。
+The core of this problem is to ensure that the selected range always contains **at least one element from each list**.
 
-- 初始化：先把每个子数组的第一个元素放入堆中并记录最大值。
-- 遍历：一个while循环，每次取出一个元素（最小值），更新最小值，从而更新最小范围。如果最小范围变小就记录当前的状态。
-- 在遍历的最后把取出的最小元素的下一个元素（如果有）加入堆中，并更新最大值。
-- 循环结束时记录的状态即为答案。
+To achieve this, we maintain a container that always holds exactly **k** elements (where `k` is the number of lists). During traversal, we must repeatedly obtain the current minimum and maximum values to determine the range, so using a **min-heap** is the natural choice.
 
-代码如下：
+- **Initialization**:  
+  Push the first element of each list into the heap and record the current maximum value.
+
+- **Traversal**:  
+  Use a `while` loop. Each time:
+    - Remove the smallest element from the heap.
+    - Update the current minimum.
+    - Compare and update the smallest range if needed.
+
+- After removing the smallest element, insert the next element from the same list (if it exists) into the heap, and update the maximum value.
+
+- When the loop ends, the recorded range is the answer.
+
+---
 
 ```java
 class Solution {
@@ -703,7 +771,7 @@ class Solution {
         int max = Integer.MIN_VALUE;
         for(int i = 0; i < nums.size(); i ++) {
             q.offer(new int[] {nums.get(i).get(0), i, 0});
-          // arr[0] for value. arr[1] for i of nums[i], arr[2] for j of nums[i][j];
+            // arr[0] for value, arr[1] for index i of nums[i], arr[2] for index j of nums[i][j]
             max = Math.max(max, nums.get(i).get(0));
         }
         int len = Integer.MAX_VALUE;
@@ -728,14 +796,33 @@ class Solution {
 }
 ```
 
-时间复杂度分析：
+---
 
-- 设共有N个元素， 最坏情况下需要遍历所有元素。
-- 每个元素只进行一次进出堆的操作，堆中元素的数量始终为K，进入堆时维护最小堆的复杂度为`O(logK)`，出堆时的复杂度为`O(1)`， 维护堆的时间复杂度为`O(logK)`。共有N个元素，重复N次，时间复杂度为`O(N*(O(logK) + O(logK) + O(1))) = O(NlogK)`。
+## Time Complexity Analysis
 
-空间复杂度分析：
+- Suppose there are `N` total elements across all lists.
+- In the worst case, we traverse all elements.
+- Each element is pushed into and popped from the heap at most once.
+- The heap size is always `k`.
+- Insertion and heap maintenance cost `O(log k)`.
 
-- 堆中最多有K个元素，K为nums的size。空间复杂度为`O(K)`。
+Therefore, the total time complexity is:
+
+```
+O(N log k)
+```
+
+---
+
+## Space Complexity Analysis
+
+- The heap contains at most `k` elements.
+
+Therefore, the space complexity is:
+
+```
+O(k)
+```
 
 # [2406. Divide Intervals Into Minimum Number of Groups](https://leetcode.com/problems/divide-intervals-into-minimum-number-of-groups/)
 
@@ -743,11 +830,11 @@ You are given a 2D integer array `intervals` where `intervals[i] = [lefti, right
 
 You have to divide the intervals into one or more **groups** such that each interval is in **exactly** one group, and no two intervals that are in the same group **intersect** each other.
 
-Return *the* ***minimum\*** *number of groups you need to make*.
+Return *the* ***minimum*** *number of groups you need to make*.
 
 Two intervals **intersect** if there is at least one common number between them. For example, the intervals `[1, 5]` and `[5, 8]` intersect.
 
-
+---
 
 **Example 1:**
 
@@ -769,7 +856,7 @@ Output: 1
 Explanation: None of the intervals overlap, so we can put all of them in one group.
 ```
 
-
+---
 
 **Constraints:**
 
@@ -777,14 +864,19 @@ Explanation: None of the intervals overlap, so we can put all of them in one gro
 - `intervals[i].length == 2`
 - `1 <= lefti <= righti <= 10^6`
 
+---
 
+## Approach
 
-可以画一个时间轴，把intervals中的每个元素当成一个时间段画在时间轴上，重叠时间段最多的时间点对应的重叠的数量就是最小需要的分组数。
+We can visualize a timeline and draw each interval as a segment on it.  
+The time point with the maximum number of overlapping intervals corresponds to the **minimum number of groups** required.
 
-- 把每个时间段拆成开始时间和结束时间，放入最小堆。
-- 依次遍历堆中每一个元素，在遍历时，记录同时存在的时间段的最大数量即为答案。
+- Split each interval into a **start event** and an **end event**, and push them into a min-heap.
+- Traverse all events in chronological order.
+- While traversing, maintain the number of currently active intervals.
+- The maximum number of simultaneously active intervals is the answer.
 
-代码如下：
+---
 
 ```java
 class Solution {
@@ -793,17 +885,17 @@ class Solution {
             return a[0] - b[0];
         });
         for(int[] arr: intervals) {
-            q.offer(new int[] {arr[0], 0});
-            q.offer(new int[] {arr[1], 1});
+            q.offer(new int[] {arr[0], 0}); // start
+            q.offer(new int[] {arr[1], 1}); // end
         }
         int overlapped = 0;
         int mostOverlapped = 0;
         while(!q.isEmpty()) {
             int[] cur = q.poll();
             if(cur[1] == 0) {
-                mostOverlapped = Math.max(mostOverlapped, ++ overlapped);
+                mostOverlapped = Math.max(mostOverlapped, ++overlapped);
             } else {
-                overlapped --;
+                overlapped--;
             }
         }
         return mostOverlapped;
@@ -811,150 +903,231 @@ class Solution {
 }
 ```
 
-时间复杂度分析：
+---
 
-- 设intervals数组共有N个元素，则共有2N个元素需要进栈和出栈各一次。时间复杂度为`O(2N*2*O(log2N)) = O(NlogN)`。
+## Time Complexity Analysis
 
-空间复杂度分析:
+- Suppose there are `N` intervals.
+- We insert `2N` elements into the heap and remove `2N` elements.
+- Each heap operation costs `O(log(2N))`.
 
-- 堆中最多存在2N个元素，空间复杂度为`O(2N) = O(N)`。
+Therefore, the total time complexity is:
+
+```
+O(N log N)
+```
+
+---
+
+## Space Complexity Analysis
+
+- The heap contains at most `2N` elements.
+
+Therefore, the space complexity is:
+
+```
+O(N)
+```
 
 
 
 # [962. Maximum Width Ramp](https://leetcode.com/problems/maximum-width-ramp/)
 
+A **ramp** in an integer array `nums` is a pair `(i, j)` such that `i < j` and `nums[i] <= nums[j]`. The **width** of the ramp is `j - i`.
 
+Given an integer array `nums`, return *the maximum width of a* ***ramp*** *in* `nums`. If there is no ramp in `nums`, return `0`.
 
-A **ramp** in an integer array `nums` is a pair `(i, j)` for which `i < j` and `nums[i] <= nums[j]`. The **width** of such a ramp is `j - i`.
+---
 
-Given an integer array `nums`, return *the maximum width of a* ***ramp\*** *in* `nums`. If there is no **ramp** in `nums`, return `0`.
-
-
-
-**Example 1:**
+## Example 1
 
 ```plain
 Input: nums = [6,0,8,2,1,5]
 Output: 4
-Explanation: The maximum width ramp is achieved at (i, j) = (1, 5): nums[1] = 0 and nums[5] = 5.
+Explanation: The maximum width ramp is achieved at (i, j) = (1, 5): 
+nums[1] = 0 and nums[5] = 5.
 ```
 
-**Example 2:**
+## Example 2
 
 ```plain
 Input: nums = [9,8,1,0,1,9,4,0,4,1]
 Output: 7
-Explanation: The maximum width ramp is achieved at (i, j) = (2, 9): nums[2] = 1 and nums[9] = 1.
+Explanation: The maximum width ramp is achieved at (i, j) = (2, 9): 
+nums[2] = 1 and nums[9] = 1.
 ```
 
- 
+---
 
-**Constraints:**
+## Constraints
 
 - `2 <= nums.length <= 5 * 10^4`
 - `0 <= nums[i] <= 5 * 10^4`
 
+---
 
+# Method 1: Sorting
 
-第一种方法是把所有元素按从小到大排序，再遍历一遍，遍历过程中维护最小下标并更新最长ramp的距离。
+## Idea
+
+Bind each element with its index, then sort them in ascending order by value.
+
+After sorting:
+
+- If `nums[i] <= nums[j]`, then `(nums[i], i)` must appear before `(nums[j], j)` in the sorted array.
+- While traversing the sorted array, maintain the smallest index seen so far (`minIndex`).
+- For each element:
+    - Update the maximum width using `index - minIndex`.
+    - Update `minIndex`.
+
+---
 
 ```java
 class Solution {
     public int maxWidthRamp(int[] nums) {
         List<int[]> arr = new ArrayList<>();
-        for(int i = 0; i < nums.length; i ++) {
+        for(int i = 0; i < nums.length; i++) {
             arr.add(new int[] {nums[i], i});
         }
+
         Collections.sort(arr, (a, b) -> {
             return a[0] - b[0];
         });
+
         int min = arr.get(0)[1];
         int res = 0;
-        for(int[] num: arr) {
+
+        for(int[] num : arr) {
             min = Math.min(min, num[1]);
             res = Math.max(num[1] - min, res);
         }
+
         return res;
     }
 }
 ```
 
-时间复杂度分析：
+---
 
-- 共有N个元素，排序时间复杂度为`O(NlogN)`。
-- 遍历一遍复杂度为`O(N)`。
-- 综合时间复杂度为`O(N + NlogN) = O(NlogN)`。
+## Time Complexity Analysis
 
+- Sorting takes `O(N log N)`.
+- One traversal takes `O(N)`.
 
+Overall time complexity:
 
-第二种方法较为巧妙，采用一个单调栈（单调递减）记录nums中的元素，再倒着遍历，当栈顶元素不大于当前元素时出栈并更新最大值，直到栈顶元素大于当前元素或栈为空。
+```
+O(N log N)
+```
 
-单调栈的作用在这里其实是一个按倒序排序的”set“， 效果是记录了每一个可能入栈的元素的最左边位置（如果有多个相同的元素，只记录最左边的那个），这样就满足了最大ramp的要求。
+---
+
+# Method 2: Monotonic Stack (More Efficient)
+
+## Idea
+
+Use a **monotonic decreasing stack** to store candidate left indices.
+
+### First Pass (Left to Right)
+
+- If the current element is smaller than the element at the top of the stack, push its index.
+- This ensures the stack maintains strictly decreasing values.
+- If there are duplicate values, only the leftmost index is kept.
+
+### Second Pass (Right to Left)
+
+- If `nums[i] >= nums[stack.peek()]`:
+    - A valid ramp is found.
+    - Update the maximum width.
+    - Pop the stack.
+- Continue until the stack is empty or the condition no longer holds.
+
+The stack effectively behaves like a reversed sorted “set” of candidate left endpoints, ensuring we always try the leftmost valid index to maximize width.
+
+---
 
 ```java
 class Solution {
     public int maxWidthRamp(int[] nums) {
         Deque<Integer> stack = new LinkedList<>();
-        for(int i = 0; i < nums.length; i ++) {
+
+        for(int i = 0; i < nums.length; i++) {
             if(stack.isEmpty() || nums[stack.peekLast()] > nums[i]) {
                 stack.offerLast(i);
             }
-        }   
+        }
+
         int res = 0;
-        for(int i = nums.length - 1; i >= 0; i --) {
+
+        for(int i = nums.length - 1; i >= 0; i--) {
             while(!stack.isEmpty() && nums[stack.peekLast()] <= nums[i]) {
                 res = Math.max(res, i - stack.pollLast());
             }
         }
+
         return res;
     }
 }
 ```
 
-时间复杂度分析：
+---
 
-- 构建单调栈的过程需要遍历整个数组，复杂度为`O(N)`。
-- 第二次遍历最坏情况下需要遍历整个数组，复杂度为`O(N)`。
-- 综合复杂度为`O(N)`。
+## Time Complexity Analysis
+
+- Building the monotonic stack: `O(N)`
+- Reverse traversal: `O(N)`
+- Each index is pushed and popped at most once.
+
+Overall time complexity:
+
+```
+O(N)
+```
+
 
 
 
 # [3152. Special Array II](https://leetcode.com/problems/special-array-ii/)
 
+An array is considered **special** if every pair of adjacent elements contains two numbers with different parity.
 
+You are given an integer array `nums` and a 2D integer matrix `queries`, where `queries[i] = [fromi, toi]`.  
+Your task is to determine whether the subarray `nums[fromi..toi]` is **special**.
 
-An array is considered **special** if every pair of its adjacent elements contains two numbers with different parity.
+Return a boolean array `answer` such that `answer[i]` is `true` if `nums[fromi..toi]` is special.
 
-You are given an array of integer `nums` and a 2D integer matrix `queries`, where for `queries[i] = [fromi, toi]` your task is to check that subarray `nums[fromi..toi]` is **special** or not.
+---
 
-Return an array of booleans `answer` such that `answer[i]` is `true` if `nums[fromi..toi]` is special.
+## Example 1
 
+**Input:**  
+nums = [3,4,1,2,6], queries = [[0,4]]
 
+**Output:**  
+[false]
 
-**Example 1:**
+**Explanation:**  
+The subarray is `[3,4,1,2,6]`.  
+2 and 6 are both even, so it is not special.
 
-**Input:** nums = [3,4,1,2,6], queries = [[0,4]]
+---
 
-**Output:** [false]
+## Example 2
+
+**Input:**  
+nums = [4,3,1,6], queries = [[0,2],[2,3]]
+
+**Output:**  
+[false,true]
 
 **Explanation:**
 
-The subarray is `[3,4,1,2,6]`. 2 and 6 are both even.
+1. The subarray `[4,3,1]`: 3 and 1 are both odd → not special.
+2. The subarray `[1,6]`: the pair (1,6) has different parity → special.
 
-**Example 2:**
+---
 
-**Input:** nums = [4,3,1,6], queries = [[0,2],[2,3]]
-
-**Output:** [false,true]
-
-**Explanation:**
-
-1. The subarray is `[4,3,1]`. 3 and 1 are both odd. So the answer to this query is `false`.
-2. The subarray is `[1,6]`. There is only one pair: `(1,6)` and it contains numbers with different parity. So the answer to this query is `true`.
-
-
-
-**Constraints:**
+## Constraints
 
 - `1 <= nums.length <= 10^5`
 - `1 <= nums[i] <= 10^5`
@@ -962,389 +1135,622 @@ The subarray is `[3,4,1,2,6]`. 2 and 6 are both even.
 - `queries[i].length == 2`
 - `0 <= queries[i][0] <= queries[i][1] <= nums.length - 1`
 
+---
 
+# Method 1: Binary Search on Invalid Adjacent Pairs
 
-第一种方法：
+## Idea
 
-- 先遍历数组，如果找到都是偶数（或奇数）的pair，将较小的下标存入list
-- 对每一个query
-  - 进行二分查找
-  - 尝试在list中找到query[0] ～ query[1]范围内的值
-  - 找到结果为false，没找到为true
+1. Traverse the array once.
+2. If two adjacent elements have the **same parity**, store the smaller index `i` in a list.
+3. For each query `[left, right]`:
+   - We need to check whether there exists an index `i` in the range `[left, right - 1]`
+   - Use binary search to check if such an index exists in the list.
+   - If found → the subarray is NOT special.
+   - Otherwise → it is special.
+
+---
 
 ```java
 class Solution {
     public boolean[] isArraySpecial(int[] nums, int[][] queries) {
         List<Integer> list = new ArrayList<>();
-        for(int i = 0; i < nums.length - 1; i ++) {
+        
+        for(int i = 0; i < nums.length - 1; i++) {
             if(((nums[i] & 1) ^ (nums[i + 1] & 1)) == 0) {
                 list.add(i);
             }
         }
+
         boolean[] res = new boolean[queries.length];
-        for(int i = 0; i < queries.length; i ++) {
-            int left = queries[i][0], right = queries[i][1] - 1;
+
+        for(int i = 0; i < queries.length; i++) {
+            int left = queries[i][0];
+            int right = queries[i][1] - 1;
+
             int l = 0, r = list.size() - 1;
             boolean has = false;
+
             while(l <= r) {
                 int mid = l + (r - l) / 2;
-                if(left <= list.get(mid) && list.get(mid) <= right) {
+                int idx = list.get(mid);
+
+                if(left <= idx && idx <= right) {
                     has = true;
                     break;
-                } else if(list.get(mid) > right) {
+                } else if(idx > right) {
                     r = mid - 1;
-                } else if(list.get(mid) < left) {
+                } else {
                     l = mid + 1;
                 }
             }
+
             res[i] = !has;
         }
+
         return res;
     }
 }
 ```
 
-时间复杂度分析：
+---
 
-- 设共有N个元素，遍历一遍复杂度为`O(N)`
-- 设共有Q个query，对每一个query进行二分查找，复杂度为`O(QlogN)`
-- 综合复杂度为`O(N + QlogN)`
+## Time Complexity
 
-空间复杂度分析：
+- Traverse array: `O(N)`
+- Binary search for each query: `O(Q log N)`
 
-- 需要`O(Q)`的空间来存储同奇偶对
+Overall:
 
+```
+O(N + Q log N)
+```
 
+## Space Complexity
 
-还有一种效率更高的解法：
+- Store invalid adjacent indices: `O(N)`
 
-- 遍历数组，初始化prefixSum，`prefixSum[0] = 0`
-- 如果当前元素和上一个元素同为奇偶，`prefixSum[i] = prefixSum[i - 1] + 1`
+---
 
-- 对每一个query，如果`query[1] != query[0]`说明范围内有相邻的奇数或偶数
+# Method 2: Prefix Sum (More Efficient)
+
+## Idea
+
+Instead of binary search, we can preprocess prefix sums.
+
+Define:
+
+- `prefixSum[i]` = number of adjacent same-parity pairs in range `[0, i]`
+
+If two adjacent elements have the same parity:
+
+```
+prefixSum[i] = prefixSum[i - 1] + 1
+```
+
+Otherwise:
+
+```
+prefixSum[i] = prefixSum[i - 1]
+```
+
+For a query `[from, to]`:
+
+- If `prefixSum[to] - prefixSum[from] == 0`
+  → no same-parity adjacent pair exists
+  → subarray is special.
+
+---
 
 ```java
 class Solution {
     public boolean[] isArraySpecial(int[] nums, int[][] queries) {
-        boolean[] ans=new boolean[queries.length];
-        int[] prefixSum=new int[nums.length];
-        for(int i=1;i<nums.length;i++){
-            prefixSum[i]=prefixSum[i-1];
-            if(nums[i]%2==nums[i-1]%2){
-                prefixSum[i]+=1;
+        boolean[] ans = new boolean[queries.length];
+        int[] prefixSum = new int[nums.length];
+
+        for(int i = 1; i < nums.length; i++) {
+            prefixSum[i] = prefixSum[i - 1];
+            if(nums[i] % 2 == nums[i - 1] % 2) {
+                prefixSum[i] += 1;
             }
         }
-        int count=0;
-        for(int[] q:queries){
-            int from=q[0];
-            int to=q[1];
-            ans[count]=prefixSum[to]-prefixSum[from]==0 ? true:false;
+
+        int count = 0;
+
+        for(int[] q : queries) {
+            int from = q[0];
+            int to = q[1];
+            ans[count] = (prefixSum[to] - prefixSum[from] == 0);
             count++;
         }
+
         return ans;
     }
 }
 ```
 
-时间复杂度分析：
+---
 
-- 遍历一遍数组`O(N)`
-- 遍历Query`O(Q)`
-- 综合复杂度`O(N + Q)`
+## Time Complexity
 
-空间复杂度分析：
+- Build prefix sum: `O(N)`
+- Process queries: `O(Q)`
 
-- prefixSum需要额外的`O(N)`空间
+Overall:
+
+```
+O(N + Q)
+```
+
+## Space Complexity
+
+```
+O(N)
+```
+
+---
+
+## Summary
+
+| Method | Time Complexity | Space Complexity | Recommended |
+|--------|------------------|------------------|-------------|
+| Binary Search | O(N + Q log N) | O(N) | ⭐⭐ |
+| Prefix Sum | O(N + Q) | O(N) | ⭐⭐⭐⭐ |
+
+The prefix sum solution is cleaner and optimal for large inputs.
+
 
 
 
 # [2779. Maximum Beauty of an Array After Applying Operation](https://leetcode.com/problems/maximum-beauty-of-an-array-after-applying-operation/)
 
-
-
 You are given a **0-indexed** array `nums` and a **non-negative** integer `k`.
 
-In one operation, you can do the following:
+In one operation, you can:
 
-- Choose an index `i` that **hasn't been chosen before** from the range `[0, nums.length - 1]`.
-- Replace `nums[i]` with any integer from the range `[nums[i] - k, nums[i] + k]`.
+- Choose an index `i` that **has not been chosen before**.
+- Replace `nums[i]` with any integer in the range `[nums[i] - k, nums[i] + k]`.
 
-The **beauty** of the array is the length of the longest subsequence consisting of equal elements.
+The **beauty** of the array is defined as the length of the longest subsequence consisting of equal elements.
 
-Return *the* ***maximum\*** *possible beauty of the array* `nums` *after applying the operation any number of times.*
+Return the ***maximum*** possible beauty of the array after applying the operation any number of times.
 
-**Note** that you can apply the operation to each index **only once**.
+Each index can be chosen **at most once**.
 
-A **subsequence** of an array is a new array generated from the original array by deleting some elements (possibly none) without changing the order of the remaining elements.
+A **subsequence** is formed by deleting some elements (possibly none) without changing the order of the remaining elements.
 
+---
 
-
-**Example 1:**
+## Example 1
 
 ```plain
 Input: nums = [4,6,1,2], k = 2
 Output: 3
-Explanation: In this example, we apply the following operations:
-- Choose index 1, replace it with 4 (from range [4,8]), nums = [4,4,1,2].
-- Choose index 3, replace it with 4 (from range [0,4]), nums = [4,4,1,4].
-After the applied operations, the beauty of the array nums is 3 (subsequence consisting of indices 0, 1, and 3).
-It can be proven that 3 is the maximum possible length we can achieve.
+Explanation:
+- Choose index 1, replace it with 4 → nums = [4,4,1,2]
+- Choose index 3, replace it with 4 → nums = [4,4,1,4]
+The longest equal subsequence has length 3.
 ```
 
-**Example 2:**
+## Example 2
 
 ```plain
 Input: nums = [1,1,1,1], k = 10
 Output: 4
-Explanation: In this example we don't have to apply any operations.
-The beauty of the array nums is 4 (whole array).
+Explanation:
+No operation is needed. The whole array is already equal.
 ```
 
+---
 
+## Constraints
 
-- **Constraints:**
-  - `1 <= nums.length <= 10^5`
-  - `0 <= nums[i], k <= 10^5`
+- `1 <= nums.length <= 10^5`
+- `0 <= nums[i], k <= 10^5`
 
+---
 
+# Key Insight
 
-这个题类似于扎气球问题[452. Minimum Number of Arrows to Burst Balloons](https://leetcode.cn/problems/minimum-number-of-arrows-to-burst-balloons/)， 本质上都是区间问题。但这个问题变成了如何用一支箭扎破最多的气球（区间）。
+Each number `nums[i]` can be transformed into any value in the interval:
 
-虽然是子序列问题，但实际上最终的目的是找重叠数量最多的区间，所以排序是可以的。
+```
+[nums[i] - k, nums[i] + k]
+```
 
-思路是先对数组进行排序，再遍历每个区间的末尾端点， 用二分查找尝试找到第一个大于当前末尾端点的起始端点，记录此时的区间数量，每次遍历都进行更新，最终得到的就是最大值。
+So the problem becomes:
 
-代码如下：
+> Find the maximum number of intervals that overlap at some point.
+
+This is essentially an **interval overlap** problem.
+
+Although the problem mentions subsequences, the actual goal is to find the largest group of numbers whose intervals intersect at some common value.
+
+---
+
+# Approach: Sorting + Binary Search
+
+## Idea
+
+1. Sort the array.
+2. Fix a left index `i`.
+3. Use binary search to find the furthest index `mid` such that:
+
+```
+nums[mid] - k <= nums[i] + k
+```
+
+This ensures that the intervals overlap.
+
+4. Update the maximum length.
+
+---
 
 ```java
 class Solution {
     public int maximumBeauty(int[] nums, int k) {
         int n = nums.length;
         Arrays.sort(nums);
+
         int res = 1;
-        for(int i = 0; i < n; i ++) {
-            int left = i + 1, right = n - 1;
-            int first = 0;
+
+        for(int i = 0; i < n; i++) {
+            int left = i + 1;
+            int right = n - 1;
+            int farthest = i;
+
             while(left <= right) {
                 int mid = left + (right - left) / 2;
+
                 if(nums[mid] - k <= nums[i] + k) {
-                    first = mid;
+                    farthest = mid;
                     left = mid + 1;
                 } else {
                     right = mid - 1;
                 }
             }
-            res = Math.max(res, first - i + 1);
+
+            res = Math.max(res, farthest - i + 1);
         }
+
         return res;
     }
 }
 ```
 
-时间复杂度：
+---
 
-- 排序`O(NlogN)`
-- 外层循环`O(N)`，内层循环是一个二分查找`O(logn)`,综合为`O(NlogN)`
-- 综合复杂度`O(NlogN)`
+## Time Complexity
 
-空间复杂度：`O(1)`
+- Sorting: `O(N log N)`
+- Outer loop: `O(N)`
+- Binary search inside: `O(log N)`
+
+Overall:
+
+```
+O(N log N)
+```
+
+---
+
+## Space Complexity
+
+```
+O(1)
+```
+
+(ignoring sorting's internal stack space)
+
+---
+
+## Intuition Summary
+
+Even though the problem mentions subsequences, the core idea is:
+
+- Each element defines a transformable interval.
+- We want the maximum number of intervals that overlap.
+- Sorting enables efficient binary search to compute overlap size.
+
+This is fundamentally an interval overlap maximization problem.
 
 
 
 # [2981. Find Longest Special Substring That Occurs Thrice I](https://leetcode.com/problems/find-longest-special-substring-that-occurs-thrice-i/)
 
+You are given a string `s` consisting of lowercase English letters.
 
+A string is called **special** if it contains only a single repeated character.  
+For example:
 
-You are given a string `s` that consists of lowercase English letters.
+- `"abc"` is NOT special
+- `"ddd"`, `"zz"`, and `"f"` are special
 
-A string is called **special** if it is made up of only a single character. For example, the string `"abc"` is not special, whereas the strings `"ddd"`, `"zz"`, and `"f"` are special.
+Return the length of the **longest special substring** that occurs **at least three times**, or `-1` if no such substring exists.
 
-Return *the length of the* ***longest special substring\*** *of* `s` *which occurs* ***at least thrice\***, *or* `-1` *if no special substring occurs at least thrice*.
+A **substring** is a contiguous non-empty sequence of characters.
 
-A **substring** is a contiguous **non-empty** sequence of characters within a string.
+---
 
-
-
-**Example 1:**
+## Example 1
 
 ```plain
 Input: s = "aaaa"
 Output: 2
-Explanation: The longest special substring which occurs thrice is "aa": substrings "aaaa", "aaaa", and "aaaa".
-It can be shown that the maximum length achievable is 2.
+Explanation:
+The longest special substring occurring at least three times is "aa".
 ```
 
-**Example 2:**
+## Example 2
 
 ```plain
 Input: s = "abcdef"
 Output: -1
-Explanation: There exists no special substring which occurs at least thrice. Hence return -1.
+Explanation:
+No special substring occurs at least three times.
 ```
 
-**Example 3:**
+## Example 3
 
 ```plain
 Input: s = "abcaba"
 Output: 1
-Explanation: The longest special substring which occurs thrice is "a": substrings "abcaba", "abcaba", and "abcaba".
-It can be shown that the maximum length achievable is 1.
+Explanation:
+The longest special substring occurring at least three times is "a".
 ```
 
+---
 
-
-**Constraints:**
+## Constraints
 
 - `3 <= s.length <= 50`
-- `s` consists of only lowercase English letters.
+- `s` consists only of lowercase English letters.
 
+---
 
+# Key Idea
 
-最简单直接的想法是对每个字母，从长度为1到长度为n遍历查找。但是时间复杂度过高。
+A brute-force approach would try all substrings of all possible lengths for each character — but that would be inefficient.
 
-实际上观察一下最长子串的规律就不难发现只需要记录每个字母的最长子串和次长子串的长度和数量：
+Instead, observe:
 
-- 最长子串数量 >= 3 --- 最长子串长度
-- 最长子串数量 == 2 --- 最长子串长度 - 1
-- 最长子串数量 == 1
-  - 次长子串长度 == 最长子串长度 - 1 --- 最长子串长度 - 1
-  - 次长子串长度 < 最长子串长度 - 1 --- 最长子串长度 - 2
+For each character, we only need to track:
+
+- The **longest** consecutive segment
+- The **second longest** consecutive segment
+- Their counts
+
+For a character:
+
+Let:
+
+- `longest`
+- `countLongest`
+- `secondLongest`
+- `countSecondLongest`
+
+Then:
+
+1. If `countLongest >= 3`  
+   → answer can be `longest`
+
+2. If `countLongest == 2`  
+   → answer can be `longest - 1`
+
+3. If `countLongest == 1`:
+    - If `secondLongest == longest - 1`  
+      → answer can be `longest - 1`
+    - Otherwise  
+      → answer can be `longest - 2`
+
+Additionally, if total occurrences across segments ≥ 3, length 1 is always possible.
+
+---
+
+# Implementation
 
 ```java
 class Solution {
     public int maximumLength(String s) {
         int n = s.length();
-        int[][] map = new int[26][4]; 
-      // [secondLongest, numberOfSecondLongest, longest, numberOfLongest]
+        
+        // [secondLongest, countSecondLongest, longest, countLongest]
+        int[][] map = new int[26][4];
+        
         int start = 0;
-        for(int end = 0; end < n; end ++) {
-            // the goal is to find the longest special substring a time
+        
+        for(int end = 0; end < n; end++) {
             if(s.charAt(start) == s.charAt(end)) {
-                if(end != n - 1) {
-                    continue;
-                } else {
-                    update(map, s, start, end);
-                }
+                if(end != n - 1) continue;
+                update(map, s, start, end);
             } else {
                 update(map, s, start, end - 1);
                 start = end;
             }
         }
+
         if(s.charAt(n - 1) != s.charAt(n - 2)) {
             update(map, s, start, start);
         }
+
         int res = 0;
-        for(int[] arr: map) {
-            if(arr[0] + arr[2] >= 3) { // make sure corner case: 1 1 2 1
+
+        for(int[] arr : map) {
+
+            // If total segments allow at least three single chars
+            if(arr[0] + arr[2] >= 3) {
                 res = Math.max(res, 1);
             }
-            if(arr[3] >= 3) { // num of longest >= 3
+
+            if(arr[3] >= 3) {
                 res = Math.max(res, arr[2]);
-            } else if(arr[3] == 2) { // num of longest = 2
+            } else if(arr[3] == 2) {
                 res = Math.max(res, arr[2] - 1);
-            } else if(arr[3] == 1) { // num of longest = 1
-                if(arr[0] == arr[2] - 1 && arr[1] >= 1) { 
-                  // when 2ndLongest = longest - 1 and num of 2ndLongest  >= 1
+            } else if(arr[3] == 1) {
+                if(arr[0] == arr[2] - 1 && arr[1] >= 1) {
                     res = Math.max(res, arr[2] - 1);
                 } else {
                     res = Math.max(res, arr[2] - 2);
                 }
             }
         }
-    return res == 0 ? -1 : res;
+
+        return res == 0 ? -1 : res;
     }
 
     private void update(int[][] map, String s, int start, int end) {
         int cur = s.charAt(start) - 'a';
         int len = end - start + 1;
-        int l1 = map[cur][0], l1l = map[cur][1], l2 = map[cur][2], l2l = map[cur][3];
-        if(l2 == 0 && l1 == 0) { // if no 2ndLongest and longest, update longest
+
+        int second = map[cur][0];
+        int secondCount = map[cur][1];
+        int longest = map[cur][2];
+        int longestCount = map[cur][3];
+
+        if(longest == 0 && second == 0) {
             map[cur][2] = len;
             map[cur][3] = 1;
-        } else if(l2 < len) { // if longer than longest, update 2ndLongest and longest
-            map[cur][0] = l2;
-            map[cur][1] = l2l;
+        } 
+        else if(len > longest) {
+            map[cur][0] = longest;
+            map[cur][1] = longestCount;
             map[cur][2] = len;
             map[cur][3] = 1;
-        } else if(l2 == len) { // if equals to longest
-            map[cur][3] ++;
-        } else if(l1 < len) { // if shorter than longest and longer than 2ndLongest, update 2nd longest
+        } 
+        else if(len == longest) {
+            map[cur][3]++;
+        } 
+        else if(len > second) {
             map[cur][0] = len;
             map[cur][1] = 1;
-        } else if(l1 == len) { // if equals to 2ndLongest
-            map[cur][1] ++;
+        } 
+        else if(len == second) {
+            map[cur][1]++;
         }
     }
 }
 ```
 
-时间复杂度：
+---
 
-- 遍历字符串`O(n)`
-- update方法复杂度为`O(1)`
-- 遍历map复杂度为`O(26 * 4) == O(1)`
-- 综合复杂度`O(N)`
+# Time Complexity
 
-空间复杂度：
+- Traverse string: `O(N)`
+- Update operation: `O(1)`
+- Traverse 26 letters: `O(1)`
 
-- Map需要额外的`O(26 * 4) == O(1)`
+Overall:
+
+```
+O(N)
+```
+
+---
+
+# Space Complexity
+
+```
+O(1)
+```
+
+(Only 26 × 4 fixed-size storage)
+
+---
+
+## Final Insight
+
+The trick is recognizing that:
+
+- Only the top two segment lengths per character matter.
+- We don't need to examine all substrings.
+- Careful case analysis reduces the problem to simple arithmetic comparisons.
+
+This makes the solution linear and efficient.
 
 
 
 # [3381. Maximum Subarray Sum With Length Divisible by K](https://leetcode.com/problems/maximum-subarray-sum-with-length-divisible-by-k/)
 
+You are given an integer array `nums` and an integer `k`.
 
+Return the **maximum** sum of a subarray whose length is **divisible by `k`**.
 
-You are given an array of integers `nums` and an integer `k`.
+---
 
-Return the **maximum** sum of a subarray of `nums`, such that the size of the subarray is **divisible** by `k`.
+## Example 1
 
+**Input:**  
+nums = [1,2], k = 1
 
+**Output:**  
+3
 
-**Example 1:**
+**Explanation:**  
+The subarray `[1, 2]` has length 2, which is divisible by 1.
 
-**Input:** nums = [1,2], k = 1
+---
 
-**Output:** 3
+## Example 2
 
-**Explanation:**
+**Input:**  
+nums = [-1,-2,-3,-4,-5], k = 4
 
-The subarray `[1, 2]` with sum 3 has length equal to 2 which is divisible by 1.
+**Output:**  
+-10
 
-**Example 2:**
+**Explanation:**  
+The subarray `[-1, -2, -3, -4]` has length 4, which is divisible by 4.
 
-**Input:** nums = [-1,-2,-3,-4,-5], k = 4
+---
 
-**Output:** -10
+## Example 3
 
-**Explanation:**
+**Input:**  
+nums = [-5,1,2,-3,4], k = 2
 
-The maximum sum subarray is `[-1, -2, -3, -4]` which has length equal to 4 which is divisible by 4.
+**Output:**  
+4
 
-**Example 3:**
+**Explanation:**  
+The subarray `[1, 2, -3, 4]` has length 4, which is divisible by 2.
 
-**Input:** nums = [-5,1,2,-3,4], k = 2
+---
 
-**Output:** 4
-
-**Explanation:**
-
-The maximum sum subarray is `[1, 2, -3, 4]` which has length equal to 4 which is divisible by 2.
-
-
-
-**Constraints:**
+## Constraints
 
 - `1 <= k <= nums.length <= 2 * 10^5`
 - `-10^9 <= nums[i] <= 10^9`
 
+---
 
+# Key Idea
 
-对于k=1的情况，可以使用kadane算法在线性的时间复杂度下得到最大子数组和。
+If `k = 1`, the problem reduces to the classic **maximum subarray sum**, which can be solved using **Kadane’s algorithm** in `O(N)` time.
 
-如果K大于1，可以将[i, i + k], [i + k, i + 2 * k]....每个子数组当成一个元素，这样就可以使用kadane算法了。
+If `k > 1`, observe:
 
-代码如下：
+A valid subarray must have length:
+
+```
+k, 2k, 3k, ...
+```
+
+For each possible starting remainder `i` in `[0, k - 1]`, we can:
+
+- Group elements into blocks of size `k`:
+
+  ```
+  [i, i+k), [i+k, i+2k), ...
+  ```
+
+- Treat each block sum as a single element.
+- Then apply Kadane’s algorithm on that transformed array.
+
+This converts the problem into multiple standard maximum subarray problems.
+
+---
+
+# Implementation
 
 ```java
 class Solution {
@@ -1352,20 +1758,29 @@ class Solution {
         if (k == 1) {
             return kadane(nums);
         }
+
         long res = Long.MIN_VALUE;
         long[] prefix = new long[nums.length + 1];
+
+        // Build prefix sum
         for (int i = 1; i <= nums.length; i++) {
             prefix[i] = prefix[i - 1] + nums[i - 1];
         }
+
+        // Try each possible starting offset
         for (int i = 0; i < k; i++) {
             int len = (nums.length - i) / k;
             long[] tmp = new long[len];
+
             for (int j = 0; j < len; j++) {
-                int start = i + j * k, end = start + k;
+                int start = i + j * k;
+                int end = start + k;
                 tmp[j] = prefix[end] - prefix[start];
             }
+
             res = Math.max(res, kadane(tmp));
         }
+
         return res;
     }
 
@@ -1379,119 +1794,129 @@ class Solution {
             } else {
                 curr = nums[i];
             }
-            if (curr > res) {
-                res = curr;
-            }
+            res = Math.max(res, curr);
         }
+
         return res;
     }
 }
 ```
 
-时间复杂度：
+---
 
-- 计算前缀和`O(N)`
-- 外层循环复杂度为`O(K)`，内层循环复杂度为`O(N/K)`
-- Kadane算法复杂度为`O(N/K)`
-- 综合复杂度为`O(K * (N / K + N / K)) = O(N)`
+# Time Complexity
 
-空间复杂度：
+- Prefix sum computation: `O(N)`
+- Outer loop: `O(K)`
+- Inner grouping: `O(N / K)`
+- Kadane per group: `O(N / K)`
 
-- prefix需要额外的`O(N)`
-- 对于临时tmp数组最大需要`O(N/K)`
+Total:
 
-- 综合空间复杂度为`O(N)`
+```
+O(K × (N/K + N/K)) = O(N)
+```
 
+---
 
+# Space Complexity
 
-# [3376. Minimum T3376. Minimum Time to Break Locks I](https://leetcode.com/problems/minimum-time-to-break-locks-i/)
+- Prefix array: `O(N)`
+- Temporary block array: up to `O(N/K)`
 
+Overall:
 
+```
+O(N)
+```
 
-Bob is stuck in a dungeon and must break `n` locks, each requiring some amount of **energy** to break. The required energy for each lock is stored in an array called `strength` where `strength[i]` indicates the energy needed to break the `ith` lock.
+---
 
-To break a lock, Bob uses a sword with the following characteristics:
+## Final Insight
 
-- The initial energy of the sword is 0.
-- The initial factor `X` by which the energy of the sword increases is 1.
-- Every minute, the energy of the sword increases by the current factor `X`.
-- To break the `ith` lock, the energy of the sword must reach **at least** `strength[i]`.
-- After breaking a lock, the energy of the sword resets to 0, and the factor `X` increases by a given value `K`.
+This problem cleverly reduces a “length divisible by k” constraint into grouping elements into blocks of size `k`, allowing reuse of Kadane’s algorithm.
 
-Your task is to determine the **minimum** time in minutes required for Bob to break all `n` locks and escape the dungeon.
+The key realization is:
 
-Return the **minimum** time required for Bob to break all `n` locks.
+> Any valid subarray can be decomposed into consecutive full blocks of size `k`.
 
-
-
-**Example 1:**
-
-**Input:** strength = [3,4,1], K = 1
-
-**Output:** 4
-
-**Explanation:**
-
-| **Time** | **Energy** | **X** | **Action**     | **Updated X** |
-| -------- | ---------- | ----- | -------------- | ------------- |
-| 0        | 0          | 1     | Nothing        | 1             |
-| 1        | 1          | 1     | Break 3rd Lock | 2             |
-| 2        | 2          | 2     | Nothing        | 2             |
-| 3        | 4          | 2     | Break 2nd Lock | 3             |
-| 4        | 3          | 3     | Break 1st Lock | 3             |
-
-The locks cannot be broken in less than 4 minutes; thus, the answer is 4.
-
-**Example 2:**
-
-**Input:** strength = [2,5,4], K = 2
-
-**Output:** 5
-
-**Explanation:**
-
-| **Time** | **Energy** | **X** | **Action**     | **Updated X** |
-| -------- | ---------- | ----- | -------------- | ------------- |
-| 0        | 0          | 1     | Nothing        | 1             |
-| 1        | 1          | 1     | Nothing        | 1             |
-| 2        | 2          | 1     | Break 1st Lock | 3             |
-| 3        | 3          | 3     | Nothing        | 3             |
-| 4        | 6          | 3     | Break 2nd Lock | 5             |
-| 5        | 5          | 5     | Break 3rd Lock | 7             |
-
-The locks cannot be broken in less than 5 minutes; thus, the answer is 5.
+Once that’s recognized, the problem becomes linear-time solvable.
 
 
 
-**Constraints:**
+# [3376. Minimum Time to Break Locks I](https://leetcode.com/problems/evaluate-division/)
 
-- `n == strength.length`
-- `1 <= n <= 8`
-- `1 <= K <= 10`
-- `1 <= strength[i] <= 10^6`
+Bob needs to break `n` locks, each requiring a certain amount of energy given by the array `strength`, where `strength[i]` represents the energy needed to break the `i`-th lock.
 
-这个题的方法是回溯，因为问题规模较小所以回溯也不会超时。
+The rules are:
 
-代码如下：
+- The sword's initial energy is `0`.
+- The initial growth factor `X = 1`.
+- Every minute, the sword's energy increases by the current factor `X`.
+- To break the `i`-th lock, the energy must be **at least** `strength[i]`.
+- After breaking a lock:
+    - The energy resets to `0`.
+    - The factor increases by `K` (i.e., `X += K`).
+
+Your task is to compute the **minimum time (in minutes)** required to break all locks.
+
+---
+
+## Approach
+
+Since `n ≤ 8`, we can use **backtracking (DFS)** to try all possible orders of breaking the locks.
+
+At each step:
+
+- Choose an unvisited lock.
+- Compute the time needed to accumulate enough energy:
+
+  ```
+  time = ceil(strength[i] / X)
+       = (strength[i] + X - 1) / X
+  ```
+
+- Recurse with:
+    - Updated factor `X + K`
+    - Increased total time
+    - Marked lock as visited
+
+Keep track of the minimum total time across all permutations.
+
+---
+
+## Code
 
 ```java
 class Solution {
     int res = Integer.MAX_VALUE;
+
     public int findMinimumTime(List<Integer> strength, int K) {
         dfs(strength, 1, K, 0, new boolean[strength.size()], 0);
         return res;
     }
 
-    private void dfs(List<Integer> list, int x, int k, int finished, boolean[] visited, int sum) {
-        if(finished == list.size()) {
+    private void dfs(List<Integer> list, int x, int k, int finished,
+                     boolean[] visited, int sum) {
+
+        if (finished == list.size()) {
             res = Math.min(res, sum);
+            return;
         }
 
-        for(int i = 0; i < list.size(); i ++) {
-            if(!visited[i]) {
+        for (int i = 0; i < list.size(); i++) {
+            if (!visited[i]) {
                 visited[i] = true;
+
                 int time = (list.get(i) + x - 1) / x;
-                dfs(list, x + k, k, finished + 1, visited, sum + time);
+
+                dfs(list,
+                    x + k,
+                    k,
+                    finished + 1,
+                    visited,
+                    sum + time);
+
                 visited[i] = false;
             }
         }
@@ -1499,148 +1924,164 @@ class Solution {
 }
 ```
 
-时间复杂度：
+---
 
-- 对于每一个lock在回溯时都有两种选择，即选或者不选，所以时间复杂度为`O(2^N)`
+## Time Complexity
 
-空间复杂度：
+Since we try all possible orders of breaking the locks:
 
-- 在dfs中递归调用的栈空间取决于递归的深度，深度即位列表的长度，所以需要`O(N)`的栈空间。
-- 标记数组`visited`需要额外的`O(N)`。
-- 综合复杂度为`O(N)`
+```
+O(N!)
+```
+
+Given that `N ≤ 8`, this is acceptable.
+
+---
+
+## Space Complexity
+
+- Recursion stack depth: `O(N)`
+- Visited array: `O(N)`
+
+Overall:
+
+```
+O(N)
+```
 
 
 
-# [2762. Continuous Subarrays](https://leetcode.com/problems/continuous-subarrays/)
-
-
+# [2762. Continuous Subarrays](https://leetcode.com/problems/evaluate-division/)
 
 You are given a **0-indexed** integer array `nums`. A subarray of `nums` is called **continuous** if:
 
-- Let `i`, `i + 1`, ..., `j` be the indices in the subarray. Then, for each pair of indices `i <= i1, i2 <= j`, `0 <= |nums[i1] - nums[i2]| <= 2`.
+For indices `i` to `j` in the subarray, for every pair `i ≤ i1, i2 ≤ j`:
 
-Return *the total number of* ***continuous\*** *subarrays.*
-
-A subarray is a contiguous **non-empty** sequence of elements within an array.
-
-
-
-**Example 1:**
-
-```plain
-Input: nums = [5,4,2,4]
-Output: 8
-Explanation: 
-Continuous subarray of size 1: [5], [4], [2], [4].
-Continuous subarray of size 2: [5,4], [4,2], [2,4].
-Continuous subarray of size 3: [4,2,4].
-Thereare no subarrys of size 4.
-Total continuous subarrays = 4 + 3 + 1 = 8.
-It can be shown that there are no more continuous subarrays.
+```
+0 ≤ |nums[i1] - nums[i2]| ≤ 2
 ```
 
+Return the total number of **continuous subarrays**.
 
+A subarray is a contiguous non-empty sequence of elements within an array.
 
-**Example 2:**
+---
 
-```plain
-Input: nums = [1,2,3]
-Output: 6
-Explanation: 
-Continuous subarray of size 1: [1], [2], [3].
-Continuous subarray of size 2: [1,2], [2,3].
-Continuous subarray of size 3: [1,2,3].
-Total continuous subarrays = 3 + 2 + 1 = 6.
+## Key Insight
+
+For a subarray to be valid:
+
+```
+max(subarray) - min(subarray) ≤ 2
 ```
 
+So this becomes a classic **sliding window** problem where we must maintain:
 
+- The **maximum** value in the window
+- The **minimum** value in the window
 
-**Constraints:**
+Whenever:
 
-- `1 <= nums.length <= 10^5`
-- `1 <= nums[i] <= 10^9`
+```
+max - min > 2
+```
 
-因为题目中说要找到某个范围内符合条件的子数组，所以自然而然的能想到应该用滑动窗口来解决这个问题。
+we shrink the window from the left.
 
-一般的滑动窗口问题采用滑动窗口 + 一个单调队列或堆就可以解决，但由于题目中要求范围内的数的差的绝对值小于等于2，所以只用一个是不能满足要求的，因为需要同时满足范围内的最大值和最小值都满足要求，所以需要两个单调队列或者一个最大堆和最小堆。
+To efficiently maintain max and min, we can use:
 
-代码如下：
+- Two heaps (min heap + max heap) → `O(N log N)`
+- Two monotonic deques → `O(N)` (optimal)
+
+---
+
+# Heap Version
 
 ```java
-// heap版
 class Solution {
     public long continuousSubarrays(int[] nums) {
         long res = 0;
-        Queue<int[]> min = new PriorityQueue<>((a, b) -> {
-            return a[0] - b[0];
-        });
-        Queue<int[]> max = new PriorityQueue<>((a, b) -> {
-            return b[0] - a[0];
-        });
+
+        Queue<int[]> min = new PriorityQueue<>((a, b) -> a[0] - b[0]);
+        Queue<int[]> max = new PriorityQueue<>((a, b) -> b[0] - a[0]);
+
         int start = 0;
-        for(int end = 0; end < nums.length; end ++) {
-            while(!min.isEmpty() && min.peek()[0] + 2 < nums[end]) {
+
+        for (int end = 0; end < nums.length; end++) {
+
+            while (!min.isEmpty() && min.peek()[0] + 2 < nums[end]) {
                 int[] cur = min.poll();
-                if(start <= cur[1]) {
+                if (start <= cur[1]) {
                     start = cur[1] + 1;
                 }
             }
-            min.offer(new int[] {nums[end], end});
-            while(!max.isEmpty() && max.peek()[0] > nums[end] + 2) {
+            min.offer(new int[]{nums[end], end});
+
+            while (!max.isEmpty() && max.peek()[0] > nums[end] + 2) {
                 int[] cur = max.poll();
-                if(start <= cur[1]) {
+                if (start <= cur[1]) {
                     start = cur[1] + 1;
                 }
             }
-            max.offer(new int[] {nums[end], end});
+            max.offer(new int[]{nums[end], end});
+
             res += end - start + 1;
         }
+
         return res;
     }
 }
 ```
 
-时间复杂度：
+### Time Complexity
 
-- 每个元素最多进出堆一次，每次进出堆之后维护堆的复杂度为`O(logN)`，N个元素复杂度为`O(NlogN)`
+- Each element enters and leaves the heap at most once
+- Heap operations cost `O(log N)`
 
-空间复杂度：
+```
+O(N log N)
+```
 
-- 每个堆最多存储N个元素，复杂度为`O(N)`
+### Space Complexity
 
+```
+O(N)
+```
 
+---
+
+# Monotonic Deque Version (Optimal)
 
 ```java
-// 单调队列版
 class Solution {
 
     public long continuousSubarrays(int[] nums) {
-        // Monotonic deque to track maximum and minimum elements
+
         Deque<Integer> maxQ = new ArrayDeque<>();
         Deque<Integer> minQ = new ArrayDeque<>();
+
         int left = 0;
         long count = 0;
 
         for (int right = 0; right < nums.length; right++) {
-            // Maintain decreasing monotonic queue for maximum values
+
+            // Maintain decreasing deque for max
             while (!maxQ.isEmpty() && nums[maxQ.peekLast()] < nums[right]) {
                 maxQ.pollLast();
             }
             maxQ.offerLast(right);
 
-            // Maintain increasing monotonic queue for minimum values
+            // Maintain increasing deque for min
             while (!minQ.isEmpty() && nums[minQ.peekLast()] > nums[right]) {
                 minQ.pollLast();
             }
             minQ.offerLast(right);
 
-            // Shrink window if max-min difference exceeds 2
-            while (
-                !maxQ.isEmpty() &&
-                !minQ.isEmpty() &&
-                nums[maxQ.peekFirst()] - nums[minQ.peekFirst()] > 2
-            ) {
-                // Move left pointer past the element that breaks the condition
+            // Shrink window if invalid
+            while (!maxQ.isEmpty() &&
+                   !minQ.isEmpty() &&
+                   nums[maxQ.peekFirst()] - nums[minQ.peekFirst()] > 2) {
+
                 if (maxQ.peekFirst() < minQ.peekFirst()) {
                     left = maxQ.peekFirst() + 1;
                     maxQ.pollFirst();
@@ -1650,358 +2091,523 @@ class Solution {
                 }
             }
 
-            // Add count of all valid subarrays ending at current right pointer
             count += right - left + 1;
         }
+
         return count;
     }
 }
 ```
 
-时间复杂度：
+### Time Complexity
 
-- 每个元素最多进出队列各一次，复杂度为`O(N)`
+Each element:
 
-空间复杂度：
+- Enters deque once
+- Leaves deque once
 
-- 每个队列最多存储N个元素，复杂度为`O(N)`
+```
+O(N)
+```
 
+### Space Complexity
 
-# [1734. Decode XORed Permutation](https://leetcode.com/problems/decode-xored-permutation/)
+```
+O(N)
+```
 
+---
 
+## Final Takeaway
+
+This is a standard sliding window problem with a bounded range constraint:
+
+```
+max - min ≤ 2
+```
+
+Maintaining both the maximum and minimum dynamically is the key.
+
+Using two monotonic deques reduces the complexity from `O(N log N)` to `O(N)`.
+
+# 1734. [Decode XORed Permutation](https://leetcode.com/problems/evaluate-division/description/)
 
 There is an integer array `perm` that is a permutation of the first `n` positive integers, where `n` is always **odd**.
 
-It was encoded into another integer array `encoded` of length `n - 1`, such that `encoded[i] = perm[i] XOR perm[i + 1]`. For example, if `perm = [1,3,2]`, then `encoded = [2,1]`.
+It was encoded into another array `encoded` of length `n - 1`, such that:
 
-Given the `encoded` array, return *the original array* `perm`. It is guaranteed that the answer exists and is unique.
-
-
-
-**Example 1:**
-
-```plain
-Input: encoded = [3,1]
-Output: [1,2,3]
-Explanation: If perm = [1,2,3], then encoded = [1 XOR 2,2 XOR 3] = [3,1]
+```
+encoded[i] = perm[i] XOR perm[i + 1]
 ```
 
-**Example 2:**
+Given `encoded`, return the original array `perm`.
 
-```plain
-Input: encoded = [6,5,4,6]
-Output: [2,4,1,5,3]
+It is guaranteed that the answer exists and is unique.
+
+---
+
+## Key Insight
+
+Since:
+
+```
+encoded[i] = perm[i] XOR perm[i+1]
 ```
 
+If we know **any one value** in `perm`, we can recover the entire permutation using XOR.
 
+The idea is to compute `perm[0]`.
 
-**Constraints:**
+---
 
-- `3 <= n < 10^5`
-- `n` is odd.
-- `encoded.length == n - 1`
+## Derivation
 
+Because `perm` is a permutation of `[1, 2, ..., n]`:
 
+```
+perm[0] ^ perm[1] ^ ... ^ perm[n-1] = 1 ^ 2 ^ ... ^ n
+```
 
-因为每一个encoded都是从两个相邻的数得来的，所以只要知道任何一个perm就可以知道所有其他的perm。
+Let:
 
-推导过程如下：
+```
+total = 1 ^ 2 ^ ... ^ n
+```
 
-a0 ^ a1 ^ ... ^ an = 1 ^ 2 ^ ... ^ n
+Now observe:
 
-a1 ^ a2 ^ ... ^ an = e1 ^ e3 ^ ... ^ en - 1
+```
+encoded[1] = perm[1] ^ perm[2]
+encoded[3] = perm[3] ^ perm[4]
+...
+```
 
-所以 a0 = e1 ^ e3 ^ ... ^ en - 1 ^ 1 ^ 2 ^ ... ^ n
+If we XOR all encoded elements at **odd indices**:
 
-代码如下：
+```
+encoded[1] ^ encoded[3] ^ ... ^ encoded[n-2]
+```
+
+We get:
+
+```
+perm[1] ^ perm[2] ^
+perm[3] ^ perm[4] ^
+...
+perm[n-2] ^ perm[n-1]
+```
+
+Since `n` is odd, this covers:
+
+```
+perm[1] ^ perm[2] ^ ... ^ perm[n-1]
+```
+
+Call this value `partial`.
+
+Then:
+
+```
+perm[0] = total ^ partial
+```
+
+Once `perm[0]` is known, the rest can be reconstructed using:
+
+```
+perm[i] = perm[i-1] ^ encoded[i-1]
+```
+
+---
+
+## Code
 
 ```java
 class Solution {
     public int[] decode(int[] encoded) {
-        int a0 = 0;
         int n = encoded.length;
-        for(int i = 1; i <= n + 1; i ++) {
+        
+        int a0 = 0;
+
+        // XOR of 1 to n+1
+        for (int i = 1; i <= n + 1; i++) {
             a0 ^= i;
         }
-        for(int i = 1; i < n; i += 2) {
+
+        // XOR encoded elements at odd indices
+        for (int i = 1; i < n; i += 2) {
             a0 ^= encoded[i];
         }
+
         int[] res = new int[n + 1];
         res[0] = a0;
-        for(int i = 1; i < res.length; i ++) {
+
+        for (int i = 1; i < res.length; i++) {
             res[i] = res[i - 1] ^ encoded[i - 1];
         }
+
         return res;
     }
 }
 ```
 
-时间复杂度：
+---
 
-- `O(n)`
-
-空间复杂度:
-
-- `O(1)`
-
-
-
-# [1930. Unique Length-3 Palindromic Subsequences](https://leetcode.com/problems/unique-length-3-palindromic-subsequences/)
-
-
-
-Given a string `s`, return *the number of **unique palindromes of length three** that are a **subsequence** of* `s`.
-
-Note that even if there are multiple ways to obtain the same subsequence, it is still only counted **once**.
-
-A **palindrome** is a string that reads the same forwards and backwards.
-
-A **subsequence** of a string is a new string generated from the original string with some characters (can be none) deleted without changing the relative order of the remaining characters.
-
-- For example, `"ace"` is a subsequence of `"abcde"`.
-
- 
-
-**Example 1:**
+## Time Complexity
 
 ```
-Input: s = "aabca"
-Output: 3
-Explanation: The 3 palindromic subsequences of length 3 are:
-- "aba" (subsequence of "aabca")
-- "aaa" (subsequence of "aabca")
-- "aca" (subsequence of "aabca")
+O(n)
 ```
 
-**Example 2:**
+- One pass to compute total XOR
+- One pass over half of `encoded`
+- One pass to reconstruct the permutation
+
+---
+
+## Space Complexity
 
 ```
-Input: s = "adc"
-Output: 0
-Explanation: There are no palindromic subsequences of length 3 in "adc".
+O(1)
 ```
 
-**Example 3:**
+Only constant extra variables are used (excluding output array).
+
+---
+
+## Final Insight
+
+The key trick is using the property that:
 
 ```
-Input: s = "bbcbaba"
-Output: 4
-Explanation: The 4 palindromic subsequences of length 3 are:
-- "bbb" (subsequence of "bbcbaba")
-- "bcb" (subsequence of "bbcbaba")
-- "bab" (subsequence of "bbcbaba")
-- "aba" (subsequence of "bbcbaba")
+a ^ a = 0
+a ^ 0 = a
 ```
 
- 
+and leveraging the fact that `n` is **odd**, which guarantees we can isolate `perm[0]`.
 
-**Constraints:**
-
-- `3 <= s.length <= 10^5`
-- `s` consists of only lowercase English letters.
+Once the first element is determined, the entire permutation follows naturally.
 
 
 
-因为要求的只是长度为3的回文序列，所以只需要找到相同的两个字符然后统计中间包含的不同的字符就可以了。
+# 1930. [Unique Length-3 Palindromic Subsequences](https://leetcode.com/problems/unique-length-3-palindromic-subsequences/description/)
 
-比如abcba，对于a，我们只需要找到两个a的位置，然后统计夹在中间的字符数量。关键问题在于去重。
+Given a string `s`, return the number of **unique palindromes of length 3** that are a **subsequence** of `s`.
 
-类似前缀和，采用一个二维数组来记录每个位置所有字母出现的次数，这样就可以当确定某个区间的时候知道每个字符出现的频率。
+A palindrome reads the same forward and backward.  
+A subsequence is formed by deleting some (possibly zero) characters without changing the relative order.
 
-代码如下：
+---
+
+## Key Idea
+
+Since the required palindrome length is **3**, its structure must be:
+
+```
+a b a
+```
+
+So for every character `a`, we:
+
+1. Find its **first occurrence**
+2. Find its **last occurrence**
+3. Count how many **distinct characters** appear between them
+
+Each distinct middle character `b` forms a unique palindrome:
+
+```
+a b a
+```
+
+The main challenge is avoiding duplicates.
+
+---
+
+## Approach
+
+We use:
+
+- `first[26]` to record the first occurrence of each character
+- A prefix frequency array `map[i][26]`:
+  - `map[i][c]` stores how many times character `c` appears in `s[0..i]`
+- A boolean matrix `exists[26][26]` to prevent duplicate counting
+
+When processing index `i` as a potential **right boundary**:
+
+- Let `cur` be the character
+- Check if the distance from its first occurrence is at least 2
+- For every character `k`:
+  - If it appears between `first[cur]` and `i`
+  - And hasn't been counted before
+  - Then increment result
+
+---
+
+## Code
 
 ```java
 class Solution {
     public int countPalindromicSubsequence(String s) {
         int n = s.length();
         int[][] map = new int[n][26];
-        int[] first = new int[26]; // The smallest idx of each character
+        int[] first = new int[26]; 
         Arrays.fill(first, -1);
-        for(int i = 0; i < n; i ++) {
+
+        for(int i = 0; i < n; i++) {
             int cur = s.charAt(i) - 'a';
+
             if(first[cur] == -1) {
                 first[cur] = i;
             }
+
             if(i != 0) {
-                for(int j = 0; j < 26; j ++) {
+                for(int j = 0; j < 26; j++) {
                     map[i][j] = map[i - 1][j];
                 }
             }
-            map[i][cur] ++;
+
+            map[i][cur]++;
         }
+
         boolean[][] exists = new boolean[26][26];
         int res = 0;
-        for(int i = 2; i < n; i ++) {
+
+        for(int i = 2; i < n; i++) {
             int cur = s.charAt(i) - 'a';
+
             if(first[cur] == -1 || i - first[cur] < 2) {
                 continue;
             }
-            for(int k = 0; k < 26; k ++) {
-                if(map[i - 1][k] - map[first[cur]][k] > 0 && !exists[cur][k]) {
-                    res ++;
+
+            for(int k = 0; k < 26; k++) {
+                if(map[i - 1][k] - map[first[cur]][k] > 0 
+                   && !exists[cur][k]) {
+                    res++;
                     exists[cur][k] = true;
                 }
             }
         }
+
         return res;
     }
 }
 ```
 
-时间复杂度：
+---
 
-- ` O(n)`
-
-空间复杂度：
-
-- `O(n)`
-
-
-
-# [2381. Shifting Letters II](https://leetcode.com/problems/shifting-letters-ii/)
-
-
-
-You are given a string `s` of lowercase English letters and a 2D integer array `shifts` where `shifts[i] = [starti, endi, directioni]`. For every `i`, **shift** the characters in `s` from the index `starti` to the index `endi` (**inclusive**) forward if `directioni = 1`, or shift the characters backward if `directioni = 0`.
-
-Shifting a character **forward** means replacing it with the **next** letter in the alphabet (wrapping around so that `'z'` becomes `'a'`). Similarly, shifting a character **backward** means replacing it with the **previous** letter in the alphabet (wrapping around so that `'a'` becomes `'z'`).
-
-Return *the final string after all such shifts to* `s` *are applied*.
-
- 
-
-**Example 1:**
+## Time Complexity
 
 ```
-Input: s = "abc", shifts = [[0,1,0],[1,2,1],[0,2,1]]
-Output: "ace"
-Explanation: Firstly, shift the characters from index 0 to index 1 backward. Now s = "zac".
-Secondly, shift the characters from index 1 to index 2 forward. Now s = "zbd".
-Finally, shift the characters from index 0 to index 2 forward. Now s = "ace".
+O(n)
 ```
 
-**Example 2:**
+- One pass to build prefix frequency
+- One pass to count valid palindromes
+- Inner loop runs over 26 characters (constant)
+
+---
+
+## Space Complexity
 
 ```
-Input: s = "dztz", shifts = [[0,0,0],[1,1,1]]
-Output: "catz"
-Explanation: Firstly, shift the characters from index 0 to index 0 backward. Now s = "cztz".
-Finally, shift the characters from index 1 to index 1 forward. Now s = "catz".
+O(n)
 ```
 
- 
+- Prefix frequency array requires `O(n * 26)`
+- Auxiliary arrays are constant size
 
-**Constraints:**
+---
 
-- `1 <= s.length, shifts.length <= 5 * 10^4`
-- `shifts[i].length == 3`
-- `0 <= starti <= endi < s.length`
-- `0 <= directioni <= 1`
-- `s` consists of lowercase English letters.
+## Core Insight
 
+Because the palindrome length is fixed at 3, we reduce the problem to:
 
+> For each character `a`, count distinct characters between its first and last occurrence.
 
-如果直接模拟，问题的规模是5 * 10 ^ 4，最坏复杂度是`O(n^2)`，绝对会超时。
-
-可以用一个数组统计每个位置需要移动的次数，类似前缀和，这样复杂度就降到了线性。
+The constraint of lowercase English letters (26 characters) makes this efficient and manageable.
 
 
 
-代码如下：
+
+
+
+# 2381. [Shifting Letters II](https://leetcode.com/problems/shifting-letters-ii/description/)
+
+You are given a string `s` and a list of shift operations `shifts`, where:
+
+```
+shifts[i] = [start, end, direction]
+```
+
+- If `direction == 1`, shift characters in `[start, end]` **forward**
+- If `direction == 0`, shift characters in `[start, end]` **backward**
+
+Shifting forward:
+```
+'z' → 'a'
+```
+
+Shifting backward:
+```
+'a' → 'z'
+```
+
+Return the final string after applying all shifts.
+
+---
+
+## Key Idea
+
+If we simulate each shift directly, the worst-case time complexity becomes:
+
+```
+O(n * m)
+```
+
+where `n` is the string length and `m` is the number of shifts — this will TLE.
+
+Instead, we use a **difference array (prefix sum technique)**.
+
+### Why it works
+
+For each shift operation:
+
+- If forward (`direction == 1`):
+  ```
+  diff[start] += 1
+  diff[end + 1] -= 1
+  ```
+- If backward (`direction == 0`):
+  ```
+  diff[start] -= 1
+  diff[end + 1] += 1
+  ```
+
+After processing all operations, we compute the prefix sum of `diff`.
+
+Then `diff[i]` tells us how many times index `i` should be shifted.
+
+Finally, apply the shift with modulo 26.
+
+---
+
+## Code
 
 ```java
 class Solution {
     public String shiftingLetters(String s, int[][] shifts) {
         int n = s.length();
-        int[] map = new int[n + 1];
-        for(int[] arr: shifts) {
-            if(arr[2] == 1) {
-                map[arr[0]] ++;
-                map[arr[1] + 1] --;
+        int[] diff = new int[n + 1];
+
+        for (int[] arr : shifts) {
+            if (arr[2] == 1) {
+                diff[arr[0]]++;
+                diff[arr[1] + 1]--;
             } else {
-                map[arr[0]] --;
-                map[arr[1] + 1] ++;
+                diff[arr[0]]--;
+                diff[arr[1] + 1]++;
             }
         }
-        for(int i = 1; i < n; i ++) {
-            map[i] += map[i - 1];
+
+        for (int i = 1; i < n; i++) {
+            diff[i] += diff[i - 1];
         }
+
         char[] str = s.toCharArray();
-        for(int i = 0; i < n; i ++) {
-            str[i] = (char) (((str[i] - 'a' + map[i]) % 26 + 26) % 26 + 'a');
+
+        for (int i = 0; i < n; i++) {
+            str[i] = (char) (
+                ((str[i] - 'a' + diff[i]) % 26 + 26) % 26 + 'a'
+            );
         }
+
         return new String(str);
     }
 }
 ```
 
-时间复杂度：
+---
 
-- `O(n)`
-
-空间复杂度：
-
-- `O(n)`
-
-
-
-# [983. Minimum Cost For Tickets](https://leetcode.com/problems/minimum-cost-for-tickets/)
-
-
-
-You have planned some train traveling one year in advance. The days of the year in which you will travel are given as an integer array `days`. Each day is an integer from `1` to `365`.
-
-Train tickets are sold in **three different ways**:
-
-- a **1-day** pass is sold for `costs[0]` dollars,
-- a **7-day** pass is sold for `costs[1]` dollars, and
-- a **30-day** pass is sold for `costs[2]` dollars.
-
-The passes allow that many days of consecutive travel.
-
-- For example, if we get a **7-day** pass on day `2`, then we can travel for `7` days: `2`, `3`, `4`, `5`, `6`, `7`, and `8`.
-
-Return *the minimum number of dollars you need to travel every day in the given list of days*.
-
- 
-
-**Example 1:**
+## Time Complexity
 
 ```
-Input: days = [1,4,6,7,8,20], costs = [2,7,15]
-Output: 11
-Explanation: For example, here is one way to buy passes that lets you travel your travel plan:
-On day 1, you bought a 1-day pass for costs[0] = $2, which covered day 1.
-On day 3, you bought a 7-day pass for costs[1] = $7, which covered days 3, 4, ..., 9.
-On day 20, you bought a 1-day pass for costs[0] = $2, which covered day 20.
-In total, you spent $11 and covered all the days of your travel.
+O(n + m)
 ```
 
-**Example 2:**
+- Process all shift operations
+- One prefix sum pass
+- One pass to build result
+
+---
+
+## Space Complexity
 
 ```
-Input: days = [1,2,3,4,5,6,7,8,9,10,30,31], costs = [2,7,15]
-Output: 17
-Explanation: For example, here is one way to buy passes that lets you travel your travel plan:
-On day 1, you bought a 30-day pass for costs[2] = $15 which covered days 1, 2, ..., 30.
-On day 31, you bought a 1-day pass for costs[0] = $2 which covered day 31.
-In total, you spent $17 and covered all the days of your travel.
+O(n)
 ```
 
- 
+- Difference array of size `n + 1`
 
-**Constraints:**
+---
 
-- `1 <= days.length <= 365`
-- `1 <= days[i] <= 365`
-- `days` is in strictly increasing order.
-- `costs.length == 3`
-- `1 <= costs[i] <= 1000`
+## Core Insight
+
+This is a classic **range update problem**.
+
+Instead of applying each shift directly, we:
+
+1. Convert range updates into point updates using a difference array
+2. Use prefix sum to recover final shifts
+3. Apply modulo arithmetic for circular alphabet shifts
+
+This reduces the problem to linear time.
 
 
 
-线性规划
+
+
+# 983. [Minimum Cost For Tickets](https://leetcode.com/problems/minimum-cost-for-tickets/description/)
+
+You are given a list of travel days `days` and ticket costs:
+
+- 1-day pass → `costs[0]`
+- 7-day pass → `costs[1]`
+- 30-day pass → `costs[2]`
+
+Each pass covers consecutive days starting from the purchase day.
+
+Return the minimum total cost to cover all travel days.
+
+---
+
+## Key Idea — Dynamic Programming
+
+This is a classic DP problem.
+
+Let:
+
+```
+dp[d] = minimum cost to cover travel starting from day d
+```
+
+We compute it **backwards** from the last travel day.
+
+For a travel day `d`, we have three choices:
+
+```
+dp[d] = min(
+    cost[0] + dp[d + 1],
+    cost[1] + dp[d + 7],
+    cost[2] + dp[d + 30]
+)
+```
+
+If a day is **not** a travel day, its cost equals the next day’s cost.
+
+To simplify indexing beyond the last day, we extend the DP array by 30 extra days.
+
+---
+
+## Code
 
 ```java
 class Solution {
@@ -2009,32 +2615,69 @@ class Solution {
         int n = days.length;
         int[] dp = new int[days[n - 1] + 1 + 30];
         Arrays.fill(dp, Integer.MAX_VALUE);
-        int last = -1;
-        int[] len = new int[] {1, 7, 30};
-        for(int i = days[n - 1] + 1; i < dp.length; i ++) {
+
+        int[] len = new int[]{1, 7, 30};
+
+        // After last travel day, cost is 0
+        for (int i = days[n - 1] + 1; i < dp.length; i++) {
             dp[i] = 0;
         }
-        for(int i = n - 1; i >= 0; i --) {
-            while(last != -1 && last > days[i]) {
-                dp[last --] = dp[days[i + 1]];
+
+        int last = -1;
+
+        for (int i = n - 1; i >= 0; i--) {
+
+            // Fill non-travel days between two travel days
+            while (last != -1 && last > days[i]) {
+                dp[last--] = dp[days[i + 1]];
             }
+
             last = days[i];
-            for(int j = 0; j < costs.length; j ++) {
-                dp[days[i]] = Math.min(costs[j] + dp[days[i] + len[j]], dp[days[i]]);
+
+            for (int j = 0; j < 3; j++) {
+                dp[days[i]] = Math.min(
+                    dp[days[i]],
+                    costs[j] + dp[days[i] + len[j]]
+                );
             }
         }
+
         return dp[days[0]];
     }
 }
 ```
 
-时间复杂度：
+---
 
-- `O(n)`
+## Time Complexity
 
-空间复杂度：
+```
+O(n)
+```
 
-- `O(n)`
+Each travel day is processed once, and non-travel days are filled in once.
+
+---
+
+## Space Complexity
+
+```
+O(365)
+```
+
+The DP array size is bounded by the maximum possible day (≤ 365 + 30).
+
+---
+
+## Core Insight
+
+At every travel day, we decide:
+
+> Should we buy a 1-day, 7-day, or 30-day pass?
+
+Since each decision only depends on future days, backward DP works naturally.
+
+This is essentially a **minimum cost coverage problem with fixed interval options**.
 
 
 

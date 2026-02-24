@@ -1,24 +1,26 @@
 ---
-title: Spring Boot全局异常处理
+title: Global Exception Handling in Spring Boot
 date: 2024-09-16 18:01:40
 tags: 
   - Spring Boot
-  - 异常处理
+  - Exception Handling
 categories:
-  - [Spring Boot, 异常处理]
+  - [Spring Boot, Exception Handling]
 cover: https://pics.findfuns.org/exception-handling.png   
 ---
-# 前言
+# Introduction
 
-当我们用Spring Boot构建工程的时候，在处理各种复杂的业务需求时往往会涉及到各种各样的异常，比如在进行文件的IO操作时会遇到`IOException`，`FileNotFoundException`，在编写SQL语句或使用JDBC时会遇到`SQLException`，在编写涉及反射相关的代码时会遇到`ClassCastException`。除此之外还有许多常见的异常如空指针异常`NullPointerException`，数组下标越界异常`ArrayIndexOutOfBoundsException`，在使用迭代器遍历集合时修改元素产生的异常`ConcurrentModificationException`，算数异常（如除0）`ArithmeticException`等等。
+When building projects with Spring Boot, handling complex business requirements often involves dealing with various exceptions. For example, during file I/O operations, you may encounter `IOException` or `FileNotFoundException`. When writing SQL statements or using JDBC, you may face `SQLException`. When working with reflection-related code, `ClassCastException` may occur.
 
-在处理这些异常时无非就是两种选择，最直接最省事的选择是直接使用`throws`关键字抛出异常，让上层的方法处理异常。另外一种方法就是用try-catch代码块捕捉异常。这两种方法的缺点都很明显，当工程量变大需要处理异常的地方逐渐变多时，如果一个一个的处理异常会显得非常低效，而且也不方便进行统一管理。
+In addition, there are many common exceptions such as `NullPointerException`, `ArrayIndexOutOfBoundsException`, `ConcurrentModificationException` (which occurs when modifying a collection while iterating over it), and arithmetic exceptions like division by zero (`ArithmeticException`), and so on.
 
-那么是否存在一种可以全局管理异常的方法呢。
+When handling these exceptions, there are generally two approaches. The most straightforward and convenient way is to use the `throws` keyword to propagate the exception and let the upper-level method handle it. Another way is to catch exceptions using try-catch blocks. However, both approaches have obvious drawbacks. As the project grows larger and the number of exception handling points increases, handling exceptions one by one becomes inefficient and difficult to manage in a unified way.
 
-### `RestControllerAdvice`和`ExceptionHandler`
+So, is there a way to manage exceptions globally?
 
-被`RestControllerAdvice`标记的类可以用于处理全局异常。同时将`ExceptionHandler`标记在方法上可以处理对应的异常。
+### `RestControllerAdvice` and `ExceptionHandler`
+
+Classes annotated with `@RestControllerAdvice` can be used to handle global exceptions. By annotating methods with `@ExceptionHandler`, you can specify which type of exception the method handles.
 
 ```java
 @RestControllerAdvice
@@ -33,9 +35,9 @@ public class GlobalExceptionHandler {
 }
 ```
 
-ExceptionHandler接受Class[]类型的参数，代表能处理的异常的类型。
+`@ExceptionHandler` accepts parameters of type `Class[]`, representing the types of exceptions it can handle.
 
-定义基本的异常接口和枚举类
+Define a basic exception interface and an enumeration class:
 
 ```java
 public interface BaseException {
@@ -46,7 +48,7 @@ public interface BaseException {
 ```
 
 ```java
-public enum ExceptionEnum implements BaseException{
+public enum ExceptionEnum implements BaseException {
     SUCCESS("200", "Success"),
     BAD_REQUEST("400", "Bad Request"),
     NOT_FOUND("404", "Not Found"),
@@ -54,12 +56,13 @@ public enum ExceptionEnum implements BaseException{
     INTERNAL_SERVER_ERROR("500", "Internal Server Error");
 
     private final String code;
-		private final String msg;
+    private final String msg;
 
     ExceptionEnum(String code, String msg) {
         this.code = code;
         this.msg = msg;
     }
+
     @Override
     public String getCode() {
         return this.code;
@@ -72,7 +75,7 @@ public enum ExceptionEnum implements BaseException{
 }
 ```
 
-定义一个Response类用于统一返回数据的格式
+Define a `Response` class to unify the response format:
 
 ```java
 @Data
@@ -106,20 +109,20 @@ public class Response {
 }
 ```
 
-测试一下，在controller中故意制造一个算数异常
+Let’s test it by intentionally creating an arithmetic exception in the controller:
 
 ```java
 @PutMapping("/add")
 public String addPerson(@RequestBody Person person) {
-  int i = 1 / 0;
-  return myService.addPerson(person);
+    int i = 1 / 0;
+    return myService.addPerson(person);
 }
 ```
 
-在postman中发送请求
+Send a request in Postman:
 
 <img src="https://pics.findfuns.org/globalExceptionHandler.png" style="zoom:33%;" />
 
-可以看到返回的msg是"/ by zero"正对应着算数异常，同时code是先前设置好的500。
+You can see that the returned `msg` is `"/ by zero"`, which corresponds exactly to the arithmetic exception, and the `code` is the predefined `500`.
 
-这样一来我们就能通过设置全局异常处理的方式来统筹管理整个项目中的所有异常，无需再一个一个关注具体的异常处理，可以将注意力全身心放在业务逻辑上，非常方便。
+In this way, by setting up global exception handling, we can centrally manage all exceptions in the project without handling them one by one. This allows us to focus entirely on business logic, which is much more convenient.

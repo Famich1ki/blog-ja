@@ -1,83 +1,89 @@
 ---
-title: SQL注入和MyBatis对应措施
+title: SQL Injection Risks and Solutions in MyBatis
 date: 2024-08-28 16:07:19
 tags:
   - SQL
   - MyBatis
 categories:
-  - [SQL, SQL注入]
+  - [SQL, SQL Injection]
 cover: https://pics.findfuns.org/SQL-injection.jpg
 ---
 
 
 
-## SQL注入
+## SQL Injection
 
-作为一个经典的网络安全问题，sql注入是每一个学习过网络安全课程的同学都多多少少接触过的一个问题。
+As a classic web security issue, SQL injection is something that almost every student who has taken a cybersecurity course has encountered to some extent.
 
-它的原理其实非常简单，就是通过向sql语句中插入一些特殊的敏感字符，使得查询条件变成恒等从而绕过密码、用户名等的检查直接获取数据库的内容。更有甚者可以通过sql注入导致数据库内容损坏、丢失，产生一系列非常可怕的影响。
+The underlying principle is actually quite simple: by inserting specially crafted characters into an SQL statement, an attacker can manipulate the query condition into a tautology, thereby bypassing checks such as username and password validation and directly retrieving data from the database.
 
-下面是一个sql注入的例子。
+In more severe cases, SQL injection can even lead to database corruption or data loss, causing extremely serious consequences.
 
-假如我有一个用于登录的表单，客户端可以输入用户名和密码来提交表单，后端通过对用户名和密码的验证返回数据。
+Below is a simple example of SQL injection.
+
+Suppose we have a login form where users enter a username and password. The backend validates these credentials and returns the corresponding data.
 
 ```sql
 SELECT * FROM users WHERE username = ${} AND password = ${};
 ```
 
-此时，如果一些恶意用户试图输入一些特殊的符号来进行sql注入，如输入用户名为
+Now, if a malicious user enters special input such as:
 
 ```sql
 ' OR '1'='1
 ```
 
-原先的sql就会变成一个恒等式
+The original SQL statement becomes:
 
 ```sql
 SELECT * FROM users WHERE username = '' OR '1'='1' AND password = '';
 ```
 
-这样就完成了sql注入，用户将会得到数据库中全部的数据。
+Since `'1'='1'` is always true, the condition becomes a tautology, and the attacker can retrieve all records from the database.
 
-或者用户输入
+Another example:
 
 ```sql
 admin'; DROP TABLE users; --
 ```
 
-拼接之后就变成了
+After concatenation, the SQL becomes:
 
 ```sql
 SELECT * FROM users WHERE username = 'admin'; DROP TABLE users; --'
 ```
 
-在执行第一个sql之后，还会执行后面的DROP操作，导致users表直接被删除。
+After executing the first query, the `DROP TABLE` statement will also be executed, potentially deleting the entire `users` table.
 
-## 防护措施
+---
 
-1. 使用预编译的sql语句，避免输入直接和sql拼接，比如Java中的`PreparedStatement`
-2. 使用ORM框架，如MyBatis、Hibernate等
+## Prevention Measures
 
-下面介绍一下如何使用Mybatis框架来进行sql查询等操作。（当然也可以在SpringBoot中集成MyBatis，这里就不赘述了）。
+1. Use precompiled (prepared) SQL statements to avoid directly concatenating user input into SQL queries, such as Java’s `PreparedStatement`.
+2. Use ORM frameworks such as MyBatis or Hibernate.
 
-首先在pom文件中导入相关依赖
+Below, we’ll introduce how to use the MyBatis framework to perform SQL queries. (Of course, MyBatis can also be integrated into Spring Boot, but that will not be covered here.)
+
+---
+
+## Step 1: Add Dependencies in `pom.xml`
 
 ```xml
-<!-- https://mvnrepository.com/artifact/com.mysql/mysql-connector-j -->
+<!-- MySQL Driver -->
 <dependency>
     <groupId>com.mysql</groupId>
     <artifactId>mysql-connector-j</artifactId>
     <version>8.0.33</version>
 </dependency>
 
-<!-- https://mvnrepository.com/artifact/org.mybatis/mybatis -->
+<!-- MyBatis -->
 <dependency>
     <groupId>org.mybatis</groupId>
     <artifactId>mybatis</artifactId>
     <version>3.5.6</version>
 </dependency>
 
-<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
+<!-- Log4j2 -->
 <dependency>
     <groupId>org.apache.logging.log4j</groupId>
     <artifactId>log4j-core</artifactId>
@@ -85,7 +91,9 @@ SELECT * FROM users WHERE username = 'admin'; DROP TABLE users; --'
 </dependency>
 ```
 
-编写mybatis-config.xml
+---
+
+## MyBatis Configuration (`mybatis-config.xml`)
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
@@ -94,7 +102,7 @@ SELECT * FROM users WHERE username = 'admin'; DROP TABLE users; --'
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
     <settings>
-        <!-- 开启 SQL 日志 -->
+        <!-- Enable SQL logging -->
         <setting name="logImpl" value="LOG4J2"/>
     </settings>
 
@@ -113,12 +121,12 @@ SELECT * FROM users WHERE username = 'admin'; DROP TABLE users; --'
     <mappers>
         <mapper resource="com/zzb/mapper/PersonMapper.xml"/>
     </mappers>
-
-
 </configuration>
 ```
 
-日志的配置文件（log4j2，log4j，logback等等都可以）
+---
+
+## Logging Configuration (Log4j2 Example)
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -131,9 +139,9 @@ SELECT * FROM users WHERE username = 'admin'; DROP TABLE users; --'
     </Appenders>
 
     <Loggers>
-        <Logger name="com.zzb.mapper.PersonMapper" level="debug"/> 
-      <!--想看到具体的sql需要调整日志级别到debug -->
-        <Root level="error" >
+        <Logger name="com.zzb.mapper.PersonMapper" level="debug"/>
+        <!-- Set log level to debug to view detailed SQL statements -->
+        <Root level="error">
             <AppenderRef ref="stdout"/>
         </Root>
     </Loggers>
@@ -141,7 +149,9 @@ SELECT * FROM users WHERE username = 'admin'; DROP TABLE users; --'
 </Configuration>
 ```
 
-mapper接口
+---
+
+## Mapper Interface
 
 ```java
 package com.zzb.mapper;
@@ -151,7 +161,9 @@ public interface PersonMapper {
 }
 ```
 
-mapper接口对应的xml文件（或者也可以直接在mapper的方法上使用注解，直接把sql写在注解上）
+---
+
+## Mapper XML
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
@@ -167,7 +179,9 @@ mapper接口对应的xml文件（或者也可以直接在mapper的方法上使�
 </mapper>
 ```
 
-POJO类
+---
+
+## POJO Class
 
 ```java
 package com.zzb.pojo;
@@ -183,12 +197,14 @@ public class User {
 
     public User() {
     }
-  
-  	// getter, setter and toString
+
+    // getter, setter and toString
 }
 ```
 
-给Mybatis编写一个Config类，在类中提供`sqlSessionFactory`的返回方法
+---
+
+## MyBatis Configuration Class
 
 ```java
 package com.zzb.config;
@@ -202,24 +218,26 @@ import java.io.InputStream;
 public class MyBatisConfig {
     private static final SqlSessionFactory sqlSessionFactory;
 
-    static { // 静态代码块，在类加载的时候就会运行，很适合建立数据库连接等操作
+    static { 
+        // Static block executes when the class is loaded
         try {
-            String resource = "mybatis-config.xml"; // 加载mybatis配置文件
-            InputStream inputStream = Resources.getResourceAsStream(resource); 
-          	// 获取sqlSessionFactory
+            String resource = "mybatis-config.xml";
+            InputStream inputStream = Resources.getResourceAsStream(resource);
             sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
-	
+
     public static SqlSessionFactory getSqlSessionFactory() {
         return sqlSessionFactory;
     }
 }
 ```
 
-测试代码
+---
+
+## Test Code
 
 ```java
 package com.zzb;
@@ -233,7 +251,6 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-      	// 使用try-with-resource获取sqlSession
         try (SqlSession session = MyBatisConfig.getSqlSessionFactory().openSession()) {
             PersonMapper mapper = session.getMapper(PersonMapper.class);
             List<User> user = mapper.selectUser("zzb");
@@ -245,7 +262,9 @@ public class Main {
 }
 ```
 
-OutPut
+---
+
+## Output
 
 ```java
 DEBUG [main] - ==>  Preparing: SELECT * FROM person_info WHERE name = ?
@@ -254,13 +273,13 @@ DEBUG [main] - <==      Total: 1
 User{id='zzb', name='zzb'}
 ```
 
-在输出的日志中我们可以看到，实际上使用的是进行过预编译的sql语句，也就是说用户提供的参数不直接构成sql语句的结构，而只是作为参数值，这样就直接避免了sql注入。
+From the logs, we can clearly see that a precompiled SQL statement is being used. The user-provided parameter does not become part of the SQL structure itself; instead, it is bound as a parameter value. This effectively prevents SQL injection.
 
-MyBatis的预编译其实得益于JDBC底层的PreparedStatement，它会在执行sql查询前预先将sql语句进行预编译，在实际执行查询的时候再将预编译的sql填入参数。
+MyBatis achieves this through JDBC’s underlying `PreparedStatement`. The SQL statement is precompiled before execution, and parameters are safely bound during runtime.
 
-如果这样说还不是很清楚，不妨看看下面这个例子。
+To better understand the difference, consider the following example.
 
-这次我们不用`#{}`而是用`${}`。
+This time, instead of using `#{}`, we use `${}`.
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
@@ -276,16 +295,15 @@ MyBatis的预编译其实得益于JDBC底层的PreparedStatement，它会在执�
 </mapper>
 ```
 
-此时输出的日志
+The output log now becomes:
 
 ```java
 DEBUG [main] - ==>  Preparing: SELECT * FROM person_info WHERE name = 'zzb'
-DEBUG [main] - ==> Parameters: 
+DEBUG [main] - ==> Parameters:
 DEBUG [main] - <==      Total: 1
 User{id='zzb', name='zzb'}
-
 ```
 
-不难看出，在使用`${}`时使用的sql是直接通过和参数拼接形成的，这种方式完全不能防止sql注入，风险很大！
+It is clear that when using `${}`, the SQL is directly constructed by string concatenation. This approach does not prevent SQL injection and is highly risky.
 
-而相比之下`#{}`安全得多，因为`#{}`使用的是预编译和参数绑定，在根本上防止了sql注入的发生。
+In contrast, `#{}` is much safer because it relies on precompilation and parameter binding, fundamentally preventing SQL injection.

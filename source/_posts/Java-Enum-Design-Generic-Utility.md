@@ -10,7 +10,7 @@ cover: https://pics.findfuns.org/java-enumeration.png
 ---
 
 
-# Java Enum Design & Generic Utility – Study Notes
+# Java Enum Design & Generic Utility
 
 ## 1. Problem Background
 
